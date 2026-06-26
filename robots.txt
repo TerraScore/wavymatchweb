@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Utility / non-indexable pages
+Disallow: /404.html
+
+Sitemap: https://wavydating.com/sitemap.xml

@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Wavy — Strategic Whitepaper 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A plain-English breakdown of what Wavy is, why it's different, how it makes money, and what to build next. Location-first social for real connections." />
+<link rel="canonical" href="https://wavydating.com/whitepaper.html" />
+<link rel="icon" href="/assets/iconMark.png" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08071A;--surface:#0F0C25;--card:#15102E;--border:#221B42;
+  --accent:#FF2D78;--accent2:#FF6FA8;--coral:#4D6AFF;--gold:#F0B429;
+  --txt:#EDE8F8;--muted:#7A72A8;--dim:#2E2650;
+  --sans:"Helvetica Neue",Arial,system-ui,sans-serif;
+}
+html,body{width:100%;height:100%;font-family:var(--sans);-webkit-font-smoothing:antialiased;color:var(--txt);background:var(--bg)}
+
+/* ── MODE TOGGLE BAR ── */
+#modebar{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  height:48px;background:rgba(8,7,26,0.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+}
+.mb-brand{font-weight:900;font-size:14px;letter-spacing:-0.02em;color:#fff}
+.mb-brand em{color:var(--accent);font-style:normal}
+.mb-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:3px}
+.mb-tab{
+  padding:5px 16px;border:none;background:transparent;cursor:pointer;
+  font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:0.04em;
+  color:var(--muted);border-radius:4px;transition:all 0.2s;
+}
+.mb-tab.active{background:var(--accent);color:#fff}
+.mb-tab:hover:not(.active){color:var(--txt)}
+.mb-dl{
+  padding:6px 14px;background:transparent;border:1px solid var(--border);
+  border-radius:4px;font-family:var(--sans);font-size:11px;font-weight:600;
+  color:var(--muted);cursor:pointer;letter-spacing:0.06em;
+  transition:all 0.2s;
+}
+.mb-dl:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ══════════════════════════════════════════════
+   DECK MODE
+══════════════════════════════════════════════ */
+#deck-mode{display:block;position:fixed;inset:48px 0 0;overflow:hidden}
+#brief-mode{display:none}
+
+#progress{position:fixed;top:48px;left:0;z-index:200;height:2px;background:linear-gradient(90deg,var(--accent),#9B5DFF,var(--coral));transition:width .4s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(255,45,120,.5)}
+#counter{position:fixed;bottom:24px;right:28px;z-index:200;font-size:11px;letter-spacing:.12em;color:var(--dim);font-weight:600;font-variant-numeric:tabular-nums}
+#counter span{color:var(--accent)}
+.nav-a{position:fixed;top:50%;z-index:200;transform:translateY(-50%);width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .2s;border:1px solid var(--border);border-radius:50%;background:rgba(8,7,26,.85);backdrop-filter:blur(8px);color:var(--muted)}
+.nav-a:hover{opacity:1!important;color:var(--accent);border-color:var(--accent)}
+#np{left:16px}#nn{right:16px}
+body:hover .nav-a{opacity:.35}
+#hint-d{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;font-size:11px;color:var(--dim);letter-spacing:.1em;animation:fo 4s ease-in-out 3s forwards}
+@keyframes fo{to{opacity:0;pointer-events:none}}
+
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:48px 72px;opacity:0;pointer-events:none;transform:translateX(32px);transition:opacity .4s cubic-bezier(.4,0,.2,1),transform .4s cubic-bezier(.4,0,.2,1)}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.slide.ex-l{opacity:0;transform:translateX(-32px);transition:opacity .28s,transform .28s}
+.slide.ex-r{opacity:0;transform:translateX(32px);transition:opacity .28s,transform .28s}
+@media(max-width:768px){.slide{padding:32px 20px}#np{left:6px}#nn{right:6px}}
+
+.si{width:100%;max-width:1100px;position:relative;z-index:1}
+
+/* typography */
+.eye{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.eye::before{content:'';width:20px;height:1px;background:var(--accent);flex-shrink:0}
+.display{font-size:clamp(44px,7vw,88px);font-weight:900;line-height:.95;letter-spacing:-.04em;color:#fff;text-wrap:balance}
+.display em{color:var(--accent);font-style:normal}
+.hl{font-size:clamp(28px,4.5vw,52px);font-weight:900;line-height:1.05;letter-spacing:-.03em;color:#fff;text-wrap:balance}
+.hl em{color:var(--accent);font-style:normal}
+.sub{font-size:clamp(13px,1.8vw,17px);color:var(--muted);line-height:1.7;max-width:560px;margin-top:14px}
+.bn{font-size:clamp(64px,10vw,128px);font-weight:900;line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:var(--accent)}
+.bn.w{color:#fff}.bn.cr{color:var(--coral)}.bn.go{color:var(--gold)}
+
+/* layout */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:860px){.g2{grid-template-columns:1fr;gap:28px}.g3{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.g3,.g4{grid-template-columns:1fr}}
+
+/* cards */
+.dc{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:20px 18px}
+.dc.at{border-top:3px solid var(--accent)}.dc.ct{border-top:3px solid var(--coral)}.dc.gt{border-top:3px solid var(--gold)}
+.dc h3{font-size:14px;font-weight:800;color:#fff;margin-bottom:7px;letter-spacing:-.01em}
+.dc p{font-size:12px;color:var(--muted);line-height:1.6}
+.dc .tg{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:100px;background:rgba(255,45,120,.1);border:1px solid rgba(255,45,120,.3);color:var(--accent);margin-top:9px}
+
+/* stat row */
+.sr{display:flex;gap:40px;flex-wrap:wrap;margin-top:36px}
+.sb{display:flex;flex-direction:column;gap:4px}
+.sb .v{font-size:clamp(32px,5vw,52px);font-weight:900;letter-spacing:-.04em;color:#fff;line-height:1;font-variant-numeric:tabular-nums}
+.sb .v em{color:var(--accent);font-style:normal}
+.sb .l{font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+
+/* table */
+.tw{overflow-x:auto;width:100%}
+table{width:100%;border-collapse:collapse;font-size:clamp(10px,1.2vw,13px);font-variant-numeric:tabular-nums}
+thead tr{border-bottom:1px solid var(--accent)}
+th{padding:8px 11px;text-align:left;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);white-space:nowrap;font-weight:700}
+td{padding:9px 11px;color:var(--muted);border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td.yes{color:var(--accent);font-weight:800}
+td.no{color:var(--dim)}
+td.hi{color:#fff;font-weight:700}
+td.wc{background:rgba(255,45,120,.05)}
+tr:hover td{background:rgba(255,255,255,.01)}
+
+/* tiers */
+.tc{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:24px 18px;position:relative;display:flex;flex-direction:column}
+.tc.ft{border-color:var(--accent);border-width:2px}
+.tb{position:absolute;top:-9px;left:16px;background:var(--accent);color:#000;font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:900;padding:3px 9px;border-radius:2px}
+.tn{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.tp{font-size:clamp(30px,4vw,44px);font-weight:900;letter-spacing:-.04em;color:#fff;font-variant-numeric:tabular-nums;line-height:1;margin:9px 0 3px}
+.tp sup{font-size:15px}.tp sub{font-size:13px;color:var(--muted);font-weight:400}
+.tc ul{list-style:none;padding:0;margin-top:14px;flex:1}
+.tc ul li{font-size:11px;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:7px;align-items:flex-start}
+.tc ul li:last-child{border-bottom:none}
+.tc ul li::before{content:'—';color:var(--dim);flex-shrink:0}
+.tc ul li.on::before{content:'✓';color:var(--accent);font-weight:700}
+
+/* moat bars */
+.ml{display:flex;flex-direction:column;gap:16px;margin-top:20px}
+.mi .mh{display:flex;justify-content:space-between;margin-bottom:5px}
+.mi .mn{font-size:13px;color:var(--txt);font-weight:600}
+.mi .ms{font-size:11px;color:var(--muted)}
+.mb-bg{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.mb-f{height:100%;border-radius:2px}
+.fa{background:var(--accent)}.fg{background:var(--gold)}.fc{background:var(--coral)}
+
+/* phases */
+.ph{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.pitem{display:flex;gap:18px;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:16px 18px;align-items:flex-start}
+.pitem.ap{border-left:3px solid var(--accent)}
+.pn{font-size:26px;font-weight:900;color:var(--dim);letter-spacing:-.04em;line-height:1;flex-shrink:0;font-variant-numeric:tabular-nums}
+.pb h4{font-size:13px;font-weight:800;color:#fff;margin-bottom:3px}
+.pb p{font-size:12px;color:var(--muted);line-height:1.55}
+
+/* segment */
+.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:20px}
+@media(max-width:860px){.sg{grid-template-columns:1fr 1fr}}
+.sgi{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:16px 14px}
+.sgi .sn{font-size:32px;font-weight:900;color:var(--border);line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums;margin-bottom:3px}
+.sgi h4{font-size:13px;font-weight:800;color:#fff;margin-bottom:5px}
+.sgi p{font-size:11px;color:var(--muted);line-height:1.55}
+
+/* metrics */
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+@media(max-width:860px){.mg{grid-template-columns:1fr 1fr}}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:18px}
+.mc .mv{font-size:clamp(26px,3vw,38px);font-weight:900;color:var(--accent);letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1;margin-bottom:5px}
+.mc .ml2{font-size:12px;color:var(--muted)}
+.mc .mt{font-size:10px;color:var(--dim);margin-top:3px;text-transform:uppercase;letter-spacing:.1em}
+
+/* flow */
+.fl{display:flex;align-items:center;gap:0;margin-top:28px;flex-wrap:wrap;row-gap:14px}
+.fs{display:flex;flex-direction:column;align-items:center;gap:9px;flex:1;min-width:90px}
+.fi{width:52px;height:52px;background:var(--card);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
+.fi.as{border-color:var(--accent);background:rgba(255,45,120,.1)}
+.fs p{font-size:11px;color:var(--muted);text-align:center;max-width:75px}
+.fa2{font-size:16px;color:var(--dim);flex-shrink:0;padding:0 3px;margin-top:-22px}
+
+/* revenue */
+.rv{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+@media(max-width:700px){.rv{grid-template-columns:1fr}}
+.ri{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:14px 16px;border-left:3px solid var(--gold)}
+.ri h4{font-size:13px;font-weight:800;color:#fff;margin-bottom:4px}
+.ri p{font-size:12px;color:var(--muted)}
+.ri .rp{font-size:11px;color:var(--gold);font-weight:700;margin-top:6px}
+
+/* roadmap */
+.rl{display:flex;flex-direction:column;gap:9px}
+.rm{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:13px 15px}
+.rd{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.rm h4{font-size:13px;font-weight:800;color:#fff;margin-bottom:2px}
+.rm p{font-size:11px;color:var(--muted);line-height:1.5}
+
+/* focus */
+.fg2{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:2px;background:var(--border);border-radius:5px;overflow:hidden;margin-top:20px}
+.fci{background:var(--card);padding:20px}
+.fci.pr{border-top:3px solid var(--accent)}.fci.se{border-top:3px solid var(--gold)}.fci.dg{border-top:3px solid var(--coral)}
+.fci .fe{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.fci h4{font-size:13px;font-weight:800;color:#fff;margin-bottom:9px}
+.fci.pr h4{color:var(--accent)}.fci.se h4{color:var(--gold)}.fci.dg h4{color:var(--coral)}
+.fci ul{list-style:none;padding:0}
+.fci ul li{font-size:11px;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--border);display:flex;gap:7px}
+.fci ul li:last-child{border-bottom:none}
+.fci ul li::before{content:'→';color:var(--dim);flex-shrink:0}
+
+/* bg effects */
+.bg-w{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+.bg-w svg{width:100%;height:100%}
+.bg-d{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(circle,rgba(255,45,120,.065) 1px,transparent 1px);background-size:30px 30px}
+.bg-g{position:absolute;z-index:0;pointer-events:none;border-radius:50%;filter:blur(80px)}
+@keyframes wm{0%,100%{transform:translateX(0) translateY(0)}50%{transform:translateX(-3%) translateY(1%)}}
+.wa{animation:wm 8s ease-in-out infinite;transform-origin:center bottom}
+.wa2{animation:wm 12s ease-in-out infinite reverse;transform-origin:center bottom}
+@keyframes pg{0%,100%{opacity:.3}50%{opacity:.6}}
+.pulse{animation:pg 4s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.wa,.wa2,.pulse{animation:none}}
+
+/* ── MOBILE ── */
+@media(max-width:640px){
+  /* modebar */
+  #modebar{padding:0 14px;gap:8px}
+  .mb-logo{height:20px}
+  .mb-tab{padding:5px 10px;font-size:11px}
+
+  /* make slides scrollable so content is never clipped */
+  .slide{padding:64px 18px 52px;overflow-y:auto;align-items:flex-start}
+  #counter{bottom:10px;right:12px;font-size:10px}
+  #hint-d{bottom:10px;font-size:10px}
+
+  /* typography scale down */
+  .display{font-size:clamp(32px,9vw,52px);line-height:1}
+  .hl{font-size:clamp(22px,6vw,36px)}
+  .sub{font-size:14px;max-width:100%}
+  .bn{font-size:clamp(44px,12vw,80px)}
+  .sb .v{font-size:clamp(22px,7vw,38px)}
+  .sr{gap:18px;margin-top:18px}
+  .qt{font-size:clamp(22px,7vw,40px)}
+
+  /* grids collapse to 1-col */
+  .sg{grid-template-columns:1fr}
+  .mg{grid-template-columns:1fr 1fr}
+  .rv{grid-template-columns:1fr}
+  .fg2{grid-template-columns:1fr}
+
+  /* flow — drop arrows, wrap to 2-col */
+  .fl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+  .fa2{display:none}
+  .fs{min-width:unset}
+  .fi{width:44px;height:44px;font-size:18px}
+
+  /* moat labels stack vertically */
+  .mi .mh{flex-direction:column;gap:2px}
+  .mi .ms{font-size:10px}
+
+  /* phase items */
+  .pitem{padding:13px 14px;gap:12px}
+
+  /* tier cards in deck */
+  .tp{font-size:clamp(26px,7vw,40px)}
+
+  /* brief cover */
+  .b-cover{padding:24px 18px}
+  .b-cover .b-title{font-size:clamp(26px,7vw,44px)}
+  .b-cover .b-stats{gap:18px;margin-top:22px;padding-top:20px}
+  .b-cover .bs-item .bv{font-size:clamp(20px,6vw,30px)}
+
+  /* brief inner padding */
+  .brief-inner{padding:28px 16px 60px}
+
+  /* brief roadmap */
+  .b-rph{gap:10px}
+  .b-rpn{font-size:24px}
+
+  /* brief segments */
+  .b-seg{gap:10px}
+  .b-seg .bsn{font-size:28px;width:auto}
+
+  /* brief focus grid */
+  .b-focus{grid-template-columns:1fr}
+
+  /* closing */
+  .b-close{padding:32px 20px}
+}
+
+/* logo in modebar */
+.mb-logo{height:26px;width:auto;display:block}
+
+/* callout */
+.cl{padding:12px 16px;border-left:3px solid var(--accent);border-radius:0 4px 4px 0;background:rgba(255,45,120,.06);margin-top:14px}
+.cl p{font-size:13px;color:var(--txt)}
+.cl.w{border-left-color:var(--coral);background:rgba(255,77,106,.06)}
+
+/* pill row for cover */
+.pr2{display:flex;flex-wrap:wrap;gap:9px;margin-top:32px}
+.pill{padding:6px 14px;border:1px solid var(--border);border-radius:100px;font-size:11px;color:var(--muted);letter-spacing:.05em}
+.pill.a{border-color:rgba(255,45,120,.5);color:var(--accent)}
+
+/* quote slide */
+.qs{flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.qt{font-size:clamp(24px,4.5vw,58px);font-weight:900;letter-spacing:-.03em;color:#fff;line-height:1.08;text-wrap:balance;max-width:900px}
+.qt em{color:var(--accent);font-style:normal}
+
+/* closing */
+#s14{background:linear-gradient(135deg,#1A0014 0%,#2D0033 50%,#08071A 100%)}
+
+/* ══════════════════════════════════════════════
+   BRIEF MODE
+══════════════════════════════════════════════ */
+#brief-mode{
+  position:fixed;inset:48px 0 0;overflow-y:auto;overflow-x:hidden;
+  background:var(--bg);
+}
+.brief-inner{max-width:860px;margin:0 auto;padding:56px 40px 80px}
+@media(max-width:600px){.brief-inner{padding:36px 20px 60px}}
+
+/* brief cover */
+.b-cover{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:52px 48px;margin-bottom:48px;position:relative;overflow:hidden;
+}
+.b-cover::before{content:'';position:absolute;right:-60px;top:-60px;width:300px;height:300px;border-radius:50%;border:1px solid rgba(255,45,120,.08)}
+.b-cover .b-title{font-size:clamp(32px,5vw,56px);font-weight:900;color:#fff;letter-spacing:-.04em;line-height:1.05;margin:12px 0 18px;text-wrap:balance}
+.b-cover .b-title em{color:var(--accent);font-style:normal}
+.b-cover .b-sub{font-size:15px;color:var(--muted);line-height:1.7;max-width:560px}
+.b-cover .b-stats{display:flex;gap:36px;flex-wrap:wrap;margin-top:36px;padding-top:28px;border-top:1px solid var(--border)}
+.b-cover .bs-item .bv{font-size:clamp(28px,4vw,44px);font-weight:900;color:#fff;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.b-cover .bs-item .bv em{color:var(--accent);font-style:normal}
+.b-cover .bs-item .bk{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
+
+/* section */
+.b-sec{margin-bottom:56px}
+.b-sec-label{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.b-sec-label::before{content:'';width:20px;height:1px;background:var(--accent);flex-shrink:0}
+.b-h2{font-size:clamp(22px,3.5vw,34px);font-weight:900;letter-spacing:-.03em;color:#fff;line-height:1.1;margin-bottom:18px;text-wrap:balance}
+.b-p{font-size:15px;color:var(--muted);line-height:1.75;max-width:680px;margin-bottom:14px}
+.b-p strong{color:var(--txt)}
+.b-p:last-child{margin-bottom:0}
+
+/* brief feature grid */
+.b-fg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+@media(max-width:600px){.b-fg{grid-template-columns:1fr}}
+.b-fc{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:20px}
+.b-fc .b-eye{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.b-fc h3{font-size:14px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-.01em}
+.b-fc p{font-size:13px;color:var(--muted);line-height:1.6;margin:0}
+.b-fc .b-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.b-fc .b-tags span{font-size:10px;padding:3px 9px;border-radius:100px;background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+
+/* brief callout */
+.b-pull{border-left:3px solid var(--accent);padding:16px 22px;margin:20px 0;background:rgba(255,45,120,.06);border-radius:0 4px 4px 0}
+.b-pull p{font-size:15px;color:var(--txt);line-height:1.65;max-width:none;margin:0}
+.b-pull.w{border-left-color:var(--coral);background:rgba(255,77,106,.06)}
+.b-pull.g{border-left-color:var(--gold);background:rgba(240,180,41,.06)}
+
+/* brief table */
+.b-tw{overflow-x:auto;margin:20px 0}
+.b-tw table{font-size:13px}
+
+/* brief segments */
+.b-segs{display:flex;flex-direction:column;gap:14px;margin-top:20px}
+.b-seg{display:flex;gap:18px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px}
+.b-seg .bsn{font-size:36px;font-weight:900;color:var(--border);line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums;flex-shrink:0;width:40px}
+.b-seg h3{font-size:15px;font-weight:800;color:#fff;margin-bottom:6px}
+.b-seg p{font-size:13px;color:var(--muted);line-height:1.65;margin:0}
+.b-seg .b-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.b-seg .b-tags span{font-size:10px;padding:3px 9px;border-radius:100px;background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+.b-seg .b-tags .g{background:rgba(255,45,120,.1);border-color:rgba(255,45,120,.3);color:var(--accent)}
+.b-seg .b-tags .r{background:rgba(255,77,106,.1);border-color:rgba(255,77,106,.3);color:var(--coral)}
+
+/* brief tiers */
+.b-tg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:22px 0}
+@media(max-width:700px){.b-tg{grid-template-columns:1fr}}
+
+/* brief timeline */
+.b-tl{position:relative;padding-left:28px;margin-top:22px}
+.b-tl::before{content:'';position:absolute;left:7px;top:10px;bottom:0;width:1px;background:var(--border)}
+.b-tli{position:relative;margin-bottom:28px}
+.b-dot{position:absolute;left:-28px;top:6px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--border)}
+.b-dot.now{border-color:var(--accent);background:rgba(255,45,120,.15)}
+.b-tli .b-ph{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+.b-tli h3{font-size:15px;font-weight:800;color:#fff;margin-bottom:8px}
+.b-tli p{font-size:13px;color:var(--muted);line-height:1.65;max-width:620px;margin-bottom:0}
+.b-tli ul{list-style:none;padding:0;margin-top:10px}
+.b-tli ul li{font-size:13px;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:8px}
+.b-tli ul li:last-child{border-bottom:none}
+.b-tli ul li::before{content:'→';color:var(--dim);flex-shrink:0}
+
+/* brief channel table */
+.b-ch{overflow-x:auto;margin-top:20px}
+
+/* brief roadmap */
+.b-rphase{margin-bottom:32px}
+.b-rph{display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.b-rpn{font-size:32px;font-weight:900;color:var(--border);letter-spacing:-.04em;line-height:1}
+.b-rpi h3{font-size:16px;font-weight:800;color:#fff;margin:0}
+.b-rpi span{font-size:11px;color:var(--muted)}
+.b-rl{display:flex;flex-direction:column;gap:10px}
+.b-ri{display:flex;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:15px 16px}
+.b-rd{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.b-ri h4{font-size:14px;font-weight:800;color:#fff;margin-bottom:4px}
+.b-ri p{font-size:13px;color:var(--muted);line-height:1.6;margin:0}
+
+/* brief focus */
+.b-focus{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:2px;background:var(--border);border-radius:6px;overflow:hidden;margin:20px 0}
+@media(max-width:600px){.b-focus{grid-template-columns:1fr}}
+.b-fci{background:var(--card);padding:22px}
+.b-fci.pr{border-top:3px solid var(--accent)}.b-fci.se{border-top:3px solid var(--gold)}.b-fci.dg{border-top:3px solid var(--coral)}
+.b-fci .fe{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.b-fci h4{font-size:14px;font-weight:800;color:#fff;margin-bottom:10px}
+.b-fci.pr h4{color:var(--accent)}.b-fci.se h4{color:var(--gold)}.b-fci.dg h4{color:var(--coral)}
+.b-fci ul{list-style:none;padding:0}
+.b-fci ul li{font-size:13px;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:8px}
+.b-fci ul li:last-child{border-bottom:none}
+.b-fci ul li::before{content:'→';color:var(--dim);flex-shrink:0}
+
+/* brief closing */
+.b-close{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:48px;text-align:center;margin-top:48px}
+.b-close .bc-big{font-size:clamp(28px,5vw,52px);font-weight:900;letter-spacing:-.04em;color:#fff;line-height:1.08;margin-bottom:14px}
+.b-close .bc-big em{color:var(--accent);font-style:normal}
+.b-close p{font-size:14px;color:var(--muted)}
+
+hr.b-rule{border:none;border-top:1px solid var(--border);margin:28px 0}
+</style>
+</head>
+<body>
+
+<!-- ██ MODEBAR ██ -->
+<div id="modebar">
+  <a href="/" aria-label="Back to Wavy" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0">
+    <img src="assets/White.png" alt="Wavy" class="mb-logo" />
+    <span style="font-size:11px;color:var(--muted);letter-spacing:.06em;display:none" id="back-lbl">← Home</span>
+  </a>
+  <div class="mb-tabs">
+    <button class="mb-tab active" onclick="setMode('deck')">Deck</button>
+    <button class="mb-tab" onclick="setMode('brief')">Full Brief</button>
+  </div>
+</div>
+
+<!-- ██████████████████████████████████████████████
+     DECK MODE
+██████████████████████████████████████████████ -->
+<div id="deck-mode">
+<div id="progress" style="width:7.14%"></div>
+<div id="counter"><span id="cur">1</span> / <span id="tot">14</span></div>
+<button class="nav-a" id="np" aria-label="Previous" onclick="go(-1)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+<button class="nav-a" id="nn" aria-label="Next" onclick="go(1)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+<div id="hint-d">← → Arrow keys or click to navigate</div>
+
+<!-- S1 COVER -->
+<div class="slide active" id="s1">
+  <div class="bg-w"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="rg1" cx="30%" cy="60%" r="60%"><stop offset="0%" stop-color="#FF2D78" stop-opacity="0.12"/><stop offset="100%" stop-color="#FF2D78" stop-opacity="0"/></radialGradient></defs><rect width="1440" height="900" fill="url(#rg1)"/><path class="wa" d="M0 600 Q360 500 720 580 Q1080 660 1440 560 L1440 900 L0 900 Z" fill="rgba(255,45,120,0.05)"/><path class="wa2" d="M0 680 Q360 600 720 660 Q1080 720 1440 640 L1440 900 L0 900 Z" fill="rgba(255,45,120,0.04)"/></svg></div>
+  <div style="position:absolute;right:-2%;bottom:-4%;font-size:clamp(96px,18vw,200px);font-weight:900;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:2px rgba(255,45,120,.15);line-height:.85;user-select:none;z-index:0;">W</div>
+  <div class="si">
+    <div class="eye">Location-first social</div>
+    <div class="display">The room<br>is the <em>product.</em></div>
+    <div class="sub">Spots · Events · Connections — a plain-English breakdown of what Wavy is, why it's different, how it makes money, and what to build next.</div>
+    <div class="pr2">
+      <span class="pill">iOS + Android</span><span class="pill">3 revenue tiers live</span><span class="pill">v1.3.6</span>
+    </div>
+    <div class="sr">
+      <div class="sb"><div class="v">3<em>×</em></div><div class="l">Revenue streams live now</div></div>
+      <div class="sb"><div class="v">$<em>8B</em></div><div class="l">Dating app market by 2027</div></div>
+      <div class="sb"><div class="v"><em>41</em>%</div><div class="l">Singles say apps feel fake</div></div>
+      <div class="sb"><div class="v">0</div><div class="l">Direct competitors doing this</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S2 PROBLEM -->
+<div class="slide" id="s2">
+  <div class="bg-d"></div>
+  <div class="bg-g pulse" style="width:400px;height:400px;background:rgba(255,77,106,.07);right:-80px;top:-80px;"></div>
+  <div class="si">
+    <div class="eye">The Problem</div>
+    <div class="hl">Dating apps solved<br>the wrong <em style="color:var(--coral)">problem.</em></div>
+    <p style="font-size:15px;color:var(--muted);margin-top:16px;max-width:620px;line-height:1.7;">Most dating apps are essentially catalogues. You browse, swipe, hope the conversation doesn't die in three messages. The meeting — the actual reason any of this exists — happens later, somewhere else, after a lot of effort.</p>
+    <div style="margin-top:28px;display:flex;flex-direction:column;gap:10px;max-width:580px">
+      <div style="display:flex;gap:12px;align-items:center;padding:13px 16px;background:var(--card);border:1px solid var(--border);border-radius:5px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--coral);flex-shrink:0"></div><span style="font-size:13px;color:var(--muted)">Thousands of profiles → hundreds of conversations → almost no real meetings</span></div>
+      <div style="display:flex;gap:12px;align-items:center;padding:13px 16px;background:var(--card);border:1px solid var(--border);border-radius:5px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--coral);flex-shrink:0"></div><span style="font-size:13px;color:var(--muted)">Discovery is separated from reality — you swipe on people you'll never share a room with</span></div>
+      <div style="display:flex;gap:12px;align-items:center;padding:13px 16px;background:var(--card);border:1px solid var(--border);border-radius:5px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--coral);flex-shrink:0"></div><span style="font-size:13px;color:var(--muted)">Cold messaging strangers is high-anxiety, low-success for both sides</span></div>
+    </div>
+    <div class="sr">
+      <div class="sb"><div class="v" style="color:var(--coral)">41%</div><div class="l">Singles say apps feel fake</div></div>
+      <div class="sb"><div class="v">$8<em>B</em></div><div class="l">Market by 2027</div></div>
+      <div class="sb"><div class="v">0</div><div class="l">Direct competitors in our space</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 INSIGHT -->
+<div class="slide qs" id="s3">
+  <div class="bg-g pulse" style="width:600px;height:600px;background:rgba(255,45,120,.07);left:50%;top:50%;transform:translate(-50%,-50%)"></div>
+  <div class="si" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+    <div class="eye" style="justify-content:center">The Insight</div>
+    <div class="qt">Physical proximity is the<br><em>strongest</em> compatibility signal<br>that exists.</div>
+    <div style="font-size:15px;color:var(--muted);margin-top:18px;max-width:540px;line-height:1.7">And no dating app uses it properly — until now. The strongest signal isn't an algorithm. It's sharing the same physical space right now.</div>
+    <div style="margin-top:36px;display:flex;gap:40px;flex-wrap:wrap;justify-content:center">
+      <div style="text-align:center"><div style="font-size:clamp(24px,4vw,44px);font-weight:900;color:var(--muted);letter-spacing:-.03em">Tinder</div><div style="font-size:12px;color:var(--dim);margin-top:4px">Shows you someone 12km away</div></div>
+      <div style="font-size:clamp(18px,3vw,32px);color:var(--dim);align-self:center">vs</div>
+      <div style="text-align:center"><div style="font-size:clamp(24px,4vw,44px);font-weight:900;color:var(--accent);letter-spacing:-.03em">Wavy</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Shows you the person three tables over</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S4 PRODUCT -->
+<div class="slide" id="s4">
+  <div class="bg-d"></div>
+  <div class="si">
+    <div class="eye">The Product</div>
+    <div class="hl">Five systems. One <em>loop.</em></div>
+    <div class="fl">
+      <div class="fs"><div class="fi as">📍</div><p>Create or join a Spot</p></div>
+      <div class="fa2">→</div>
+      <div class="fs"><div class="fi as">🎮</div><p>Play Trivia or Icebreaker</p></div>
+      <div class="fa2">→</div>
+      <div class="fs"><div class="fi as">👋</div><p>Send a Wave</p></div>
+      <div class="fa2">→</div>
+      <div class="fs"><div class="fi as">⚡</div><p>Live Match (120s)</p></div>
+      <div class="fa2">→</div>
+      <div class="fs"><div class="fi as">💬</div><p>Chat &amp; Connect</p></div>
+    </div>
+    <div class="g3" style="margin-top:24px">
+      <div class="dc at"><h3>Spots &amp; Events</h3><p>Real-time location rooms. Public or private. Permanent venues or expiring live spots. The venue is the social context.</p><span class="tg">PostGIS · Real-time</span></div>
+      <div class="dc at"><h3>Waves</h3><p>Soft interest signals. Like a photo, leave a 150-char note. Mutual waves auto-match instantly. No cold starts.</p><span class="tg">Auto-match · Daily limits</span></div>
+      <div class="dc at"><h3>Spot Games</h3><p>Trivia (speed-scored) + Icebreaker (group answers). Breaks the ice before a word is said directly.</p><span class="tg">Live leaderboard · Push notify</span></div>
+    </div>
+    <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="dc ct"><h3>Live Matching</h3><p>One tap → queue → 120s mutual window. Both say yes: chat opens. Either passes: back to queue. No swiping.</p><span class="tg">Priority queue · Compatibility score</span></div>
+      <div class="dc" style="border-top:3px solid var(--muted)"><h3>Chat + Profiles</h3><p>Images, GIFs, reactions, typing indicators, read receipts. ML selfie verify. GPS never exposed to client.</p><span class="tg">24h / 72h windows · Incognito</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S5 MOAT -->
+<div class="slide" id="s5">
+  <div class="bg-d"></div>
+  <div class="bg-g" style="width:500px;height:500px;background:rgba(255,45,120,.06);left:-100px;bottom:-100px;filter:blur(100px)"></div>
+  <div class="si">
+    <div class="eye">Competitive Moat</div>
+    <div class="hl">Three things nobody<br>else can <em>copy fast.</em></div>
+    <p style="font-size:14px;color:var(--muted);margin-top:12px;max-width:640px;line-height:1.65">The venue pre-qualifies the match. The icebreaker removes the first-move problem. The 120-second window creates real urgency — not manufactured urgency, actual urgency because you might literally be in the same building.</p>
+    <div class="ml">
+      <div class="mi"><div class="mh"><span class="mn">Real-time physical co-location rooms</span><span class="ms">Wavy: ✓ Core / Everyone else: ✗</span></div><div class="mb-bg"><div class="mb-f fa" style="width:95%"></div></div></div>
+      <div class="mi"><div class="mh"><span class="mn">In-venue group games (Trivia + Icebreaker)</span><span class="ms">Wavy: ✓ Unique / Everyone else: ✗</span></div><div class="mb-bg"><div class="mb-f fa" style="width:88%"></div></div></div>
+      <div class="mi"><div class="mh"><span class="mn">Mutual-wave auto-match (no swiping required)</span><span class="ms">Wavy: ✓ / All others: Browse only</span></div><div class="mb-bg"><div class="mb-f fa" style="width:82%"></div></div></div>
+      <div class="mi"><div class="mh"><span class="mn">Native venue partnership infrastructure</span><span class="ms">Wavy: ✓ Built in / Bumble: Partial</span></div><div class="mb-bg"><div class="mb-f fg" style="width:76%"></div></div></div>
+      <div class="mi"><div class="mh"><span class="mn">GPS never exposed to client (server-only)</span><span class="ms">Privacy-first architecture</span></div><div class="mb-bg"><div class="mb-f fc" style="width:70%"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S6 COMPETITIVE TABLE -->
+<div class="slide" id="s6">
+  <div class="bg-d"></div>
+  <div class="si">
+    <div class="eye">Competitive Landscape</div>
+    <div class="hl">Where everyone stops.<br>Where we <em>start.</em></div>
+    <div class="tw" style="margin-top:24px">
+      <table>
+        <thead><tr><th>Feature</th><th style="color:var(--accent)">Wavy</th><th>Tinder</th><th>Hinge</th><th>Bumble</th><th>Happn</th></tr></thead>
+        <tbody>
+          <tr><td>Real-time co-location rooms</td><td class="yes wc">✓ Core</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Permanent venue spots</td><td class="yes wc">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>In-app group games</td><td class="yes wc">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Algorithm-driven live queue</td><td class="yes wc">✓</td><td style="color:var(--muted)">Browse only</td><td style="color:var(--muted)">Browse only</td><td style="color:var(--muted)">Browse only</td><td style="color:var(--muted)">Browse only</td></tr>
+          <tr><td>Venue partnership fit</td><td class="yes wc">Native</td><td class="no">None</td><td class="no">None</td><td style="color:var(--gold)">Partial</td><td class="no">None</td></tr>
+          <tr><td>GPS never exposed to client</td><td class="yes wc">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Core idea</td><td class="hi wc">You're here, NOW</td><td style="color:var(--muted)">Hot or not</td><td style="color:var(--muted)">Delete the app</td><td style="color:var(--muted)">Women first</td><td style="color:var(--muted)">Crossed paths</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cl" style="margin-top:16px"><p>Happn is the closest — but shows past paths passively. Wavy puts you in the room <em style="color:var(--accent);font-style:normal">actively</em> with tools to connect before you leave. Fundamentally different product.</p></div>
+  </div>
+</div>
+
+<!-- S7 MARKET -->
+<div class="slide" id="s7">
+  <div class="bg-d"></div>
+  <div class="bg-g pulse" style="width:500px;height:500px;background:rgba(255,45,120,.08);right:-80px;bottom:-80px"></div>
+  <div class="si">
+    <div class="g2">
+      <div>
+        <div class="eye">Market Opportunity</div>
+        <div class="hl">A broken market<br>is a <em>big</em> market.</div>
+        <p style="font-size:14px;color:var(--muted);margin-top:16px;line-height:1.7">Dating apps reached $8B in 2024. The entire growth is from monetization squeeze — not user satisfaction. 41% of singles say apps feel fake. That gap is the opportunity.</p>
+        <p style="font-size:14px;color:var(--muted);line-height:1.7">We're not fighting for a slice of the existing market. We're building the category that should have existed from the start: location-first social.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div><div class="bn">$8<span style="font-size:40%;color:var(--muted)">B</span></div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:4px">Total market by 2027</div></div>
+        <div><div class="bn" style="font-size:clamp(48px,7vw,88px)">350<span style="font-size:40%;color:var(--muted)">M</span></div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:4px">Global dating app users</div></div>
+        <div><div class="bn cr" style="font-size:clamp(48px,7vw,88px)">0</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:4px">Direct competitors in location-first social</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S8 SEGMENTS -->
+<div class="slide" id="s8">
+  <div class="bg-d"></div>
+  <div class="si">
+    <div class="eye">Target Audience</div>
+    <div class="hl">Six segments.<br><em>Different entry points.</em> One product.</div>
+    <div class="sg">
+      <div class="sgi"><div class="sn">01</div><h4>Urban Professionals (25–32)</h4><p>Coffee shops, co-working, bars. Time-poor, swipe-fatigued. Highest conversion to paid. They'll pay for something that respects their time.</p></div>
+      <div class="sgi"><div class="sn">02</div><h4>College Students (18–24)</h4><p>The density engine. Highest virality. Social anxiety → icebreaker game solves this. One campus rep creates 50–100 active users in six weeks.</p></div>
+      <div class="sgi"><div class="sn">03</div><h4>Fitness Communities (22–35)</h4><p>Crossfit, yoga, climbing walls. Activity = shared identity before a word is said. Permanent venue spots built entirely for this use case.</p></div>
+      <div class="sgi"><div class="sn">04</div><h4>Event &amp; Festival Goers</h4><p>Music festivals, tech conferences. Already primed to meet people. Clearest B2B revenue: event organisers pay for Wavy-powered social experiences.</p></div>
+      <div class="sgi"><div class="sn">05</div><h4>International Students &amp; Expats</h4><p>Newly relocated, no network. Icebreaker bypasses language barriers. Looking for community — not just dates. Bumble BFF failed them. Wavy doesn't.</p></div>
+      <div class="sgi"><div class="sn">06</div><h4>Venue Owners</h4><p>Partners, not users — but also distribution. A bar with a Wavy spot turns every customer who walks in into a potential user at zero CAC.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- S9 TIERS -->
+<div class="slide" id="s9">
+  <div class="bg-d"></div>
+  <div class="si">
+    <div class="eye">Monetization — Live Now</div>
+    <div class="hl">Three tiers.<br>Clear upgrade <em>hooks.</em></div>
+    <div class="g3" style="margin-top:24px;align-items:start">
+      <div class="tc"><div class="tn">Free</div><div class="tp"><sup>$</sup>0</div><ul><li class="on">1 match / day</li><li class="on">5 waves / day</li><li class="on">Join spots + play games</li><li>Can't accept live matches</li><li>Women: 1 wave at a time</li><li>Men / NB: wave inbox locked</li></ul></div>
+      <div class="tc ft"><div class="tb">Most Popular</div><div class="tn">Wavy+</div><div class="tp"><sup>$</sup>12.99<sub>/mo</sub></div><ul><li class="on">5 matches / day</li><li class="on">15 waves / day</li><li class="on">Accept live matches</li><li class="on">See all received waves</li><li class="on">Read receipts</li><li class="on">$7.99/mo yearly (38% off)</li></ul></div>
+      <div class="tc"><div class="tn">Wavy Pro</div><div class="tp"><sup>$</sup>24.99<sub>/mo</sub></div><ul><li class="on">Unlimited matches + waves</li><li class="on">72h chat window</li><li class="on">Priority match queue</li><li class="on">Incognito browsing</li><li class="on">$14.99/mo yearly</li></ul></div>
+    </div>
+    <div class="cl" style="margin-top:16px"><p>At $7.99/mo (yearly Pro), a user retained 18 months = <strong style="color:var(--accent)">$143.82 LTV</strong>. The lever is retention past month 3 — not conversion rate. Users who've made a real connection don't churn.</p></div>
+  </div>
+</div>
+
+<!-- S10 REVENUE -->
+<div class="slide" id="s10">
+  <div class="bg-d"></div>
+  <div class="si">
+    <div class="eye">Revenue Expansion</div>
+    <div class="hl">Subscriptions are<br><em>stream one</em> of seven.</div>
+    <div class="rv">
+      <div class="ri"><h4>Featured Venue Spots</h4><p>Cafés, gyms, bars pay to boost their spot to the top of the nearby list with a "Partner" badge.</p><div class="rp">$99–299/venue/month · Near-zero build cost</div></div>
+      <div class="ri"><h4>Sponsored Event Spots</h4><p>Conferences and festivals pay for Wavy-powered social experiences at their events.</p><div class="rp">$199–999/event · B2B sales motion</div></div>
+      <div class="ri"><h4>Queue Boost (Consumable IAP)</h4><p>$2.99 for 30-minute priority queue access. No subscription. Friday/Saturday impulse purchase.</p><div class="rp">$2.99/boost · Runs on existing IAP</div></div>
+      <div class="ri"><h4>Gift a Month of Pro</h4><p>Send a friend Wavy Pro. Every gift = a new paid user at zero CAC. Also social proof for the gifter.</p><div class="rp">$12.99/gift · Viral acquisition loop</div></div>
+    </div>
+    <div style="margin-top:12px;padding:13px 16px;background:var(--card);border:1px solid var(--border);border-radius:5px;display:flex;gap:10px;align-items:flex-start">
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:5px"></div>
+      <span style="font-size:13px;color:var(--muted)"><strong style="color:var(--txt)">Long term:</strong> Wavy for Teams (B2B icebreaker/onboarding, ~$49/mo/team) + Venue Analytics (aggregated foot traffic data). Both built on existing infrastructure.</span>
+    </div>
+  </div>
+</div>
+
+<!-- S11 GTM -->
+<div class="slide" id="s11">
+  <div class="bg-d"></div>
+  <div class="si">
+    <div class="eye">Go-to-Market</div>
+    <div class="hl"><em>Density</em> first.<br>Distribution second.</div>
+    <div class="cl w" style="margin-top:14px"><p>Critical constraint: if nobody is at a spot, there's nothing to join. Getting a million downloads in ten cities doesn't work. Getting 500 DAU in one city does. Then it becomes self-sustaining.</p></div>
+    <div class="ph" style="margin-top:16px">
+      <div class="pitem ap"><div class="pn">01</div><div class="pb"><h4>Own 1–2 cities (Now → 3 months)</h4><p>Sign 20 venue partners. Run Wavy Nights (80–120 users, same spot). Campus reps on 3 campuses at $200/mo. Target: 500 DAU before any paid marketing.</p></div></div>
+      <div class="pitem"><div class="pn">02</div><div class="pb"><h4>Content engine (Months 2–6)</h4><p>TikTok/Reels "Wavy Spot Diaries" — real stories, no actors. Mid-tier influencers host spots. UGC incentive: share a connection screenshot → 1 month Pro free.</p></div></div>
+      <div class="pitem"><div class="pn">03</div><div class="pb"><h4>B2B revenue + paid scale (Month 6+)</h4><p>Featured Spot paid tier. Festival partnerships. Referral program. Paid ads only after D30 retention &gt;18% and CAC &lt; 6-month LTV proven.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S12 ROADMAP -->
+<div class="slide" id="s12">
+  <div class="bg-d"></div>
+  <div class="si">
+    <div class="eye">Feature Roadmap</div>
+    <div class="hl">What to build next —<br>and <em>why.</em></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px">
+      <div>
+        <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:10px">Build first — retention</div>
+        <div class="rl">
+          <div class="rm"><div class="rd" style="background:var(--coral)"></div><div><h4>Spot Stories (24hr ephemeral photos)</h4><p>FOMO + organic marketing. Drives venue return visits. Zero external cost.</p></div></div>
+          <div class="rm"><div class="rd" style="background:var(--coral)"></div><div><h4>"Going Tonight" pre-announce</h4><p>Reason to open Wavy at 5pm every day. Daily habit &gt; push notifications.</p></div></div>
+          <div class="rm"><div class="rd" style="background:var(--coral)"></div><div><h4>Mutual Spot History badge</h4><p>RPC exists. 1-day UI build. "You've both visited the same gym 3 times."</p></div></div>
+          <div class="rm"><div class="rd" style="background:var(--gold)"></div><div><h4>Contextual re-engagement pushes</h4><p>"[Blueprint Coffee] has 4 people — including someone who waved at you."</p></div></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Build second — growth + monetization</div>
+        <div class="rl">
+          <div class="rm"><div class="rd" style="background:var(--coral)"></div><div><h4>Spot Wave — wave the whole room</h4><p>Anonymous group signal. Removes individual awkwardness entirely.</p></div></div>
+          <div class="rm"><div class="rd" style="background:var(--gold)"></div><div><h4>Friend Bring-Along</h4><p>Group of 2 enter a spot together. Expands beyond solo singles.</p></div></div>
+          <div class="rm"><div class="rd" style="background:var(--gold)"></div><div><h4>More game types (Speed Round, This or That)</h4><p>Zero competitors. Each game type = more time-in-spot. Infrastructure exists.</p></div></div>
+          <div class="rm"><div class="rd" style="background:var(--accent)"></div><div><h4>Venue Partner Dashboard</h4><p>"17 connections at your café last month." Makes Featured Spot sell itself.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S13 METRICS -->
+<div class="slide" id="s13">
+  <div class="bg-d"></div>
+  <div class="si">
+    <div class="eye">North Star Metrics</div>
+    <div class="hl">Five numbers that<br>tell the <em>truth.</em></div>
+    <div class="mg">
+      <div class="mc"><div class="mv">500</div><div class="ml2">DAU per target city before paid marketing</div><div class="mt">Density threshold</div></div>
+      <div class="mc"><div class="mv">&gt;1.5</div><div class="ml2">Spots joined per daily active user</div><div class="mt">Engagement depth</div></div>
+      <div class="mc"><div class="mv">&gt;18%</div><div class="ml2">D30 retention rate</div><div class="mt">Retention health</div></div>
+      <div class="mc"><div class="mv">&gt;6%</div><div class="ml2">Free → Pro conversion rate</div><div class="mt">Revenue efficiency</div></div>
+      <div class="mc"><div class="mv">&gt;0.8</div><div class="ml2">Connections started per Spot</div><div class="mt">Core product value</div></div>
+      <div class="mc" style="border-color:var(--accent)"><div class="mv" style="color:var(--gold)">&lt;6mo</div><div class="ml2">CAC payback on yearly Pro plan</div><div class="mt">Unit economics</div></div>
+    </div>
+    <div class="fg2" style="margin-top:16px">
+      <div class="fci pr"><div class="fe">Do now</div><h4>Density + venues</h4><ul><li>Sign 20 venue partners in 1 city</li><li>4 Wavy Nights in first 8 weeks</li><li>Campus reps on 3 campuses</li><li>500 DAU before any paid marketing</li></ul></div>
+      <div class="fci se"><div class="fe">Build in parallel</div><h4>Retention mechanics</h4><ul><li>Spot Stories (UGC + FOMO)</li><li>"Going Tonight" pre-announce</li><li>Mutual Spot History badge</li><li>Contextual re-engagement pushes</li></ul></div>
+      <div class="fci dg"><div class="fe">Avoid until density solved</div><h4>Not yet</h4><ul><li>No paid ads — CAC won't hold</li><li>No brand spend — earned media first</li><li>No new cities until first 2 profitable</li><li>No feature building off this list</li></ul></div>
+      <div class="fci"><div class="fe">The one-line pitch</div><h4 style="color:var(--txt)">"You're already in the same place."</h4><ul><li>The room is the product</li><li>Density first. Monetise second.</li><li>Scale third. In that order.</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- S14 CLOSING -->
+<div class="slide qs" id="s14">
+  <div class="bg-w"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><path class="wa" d="M0 500 Q360 400 720 480 Q1080 560 1440 460 L1440 900 L0 900 Z" fill="rgba(255,45,120,0.07)"/><path class="wa2" d="M0 620 Q360 540 720 600 Q1080 660 1440 580 L1440 900 L0 900 Z" fill="rgba(255,45,120,0.04)"/></svg></div>
+  <div class="bg-g pulse" style="width:700px;height:700px;background:rgba(255,45,120,.1);left:50%;top:50%;transform:translate(-50%,-50%)"></div>
+  <div class="si" style="text-align:center;display:flex;flex-direction:column;align-items:center;z-index:1">
+    <div class="eye" style="justify-content:center">The Pitch</div>
+    <div class="display">Stop swiping.<br><em>Start showing up.</em></div>
+    <div style="font-size:clamp(14px,2vw,20px);color:var(--muted);margin-top:22px;max-width:500px;line-height:1.7">You're already in the same place.<br>Wavy just makes the introduction.</div>
+    <div style="display:flex;gap:20px;margin-top:44px;flex-wrap:wrap;justify-content:center">
+      <div style="padding:18px 28px;background:rgba(255,45,120,.1);border:1px solid rgba(255,45,120,.3);border-radius:5px;text-align:center"><div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:5px">Contact</div><div style="font-size:14px;color:var(--txt)">support@wavydating.com</div></div>
+      <div style="padding:18px 28px;background:var(--card);border:1px solid var(--border);border-radius:5px;text-align:center"><div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">App</div><div style="font-size:14px;color:var(--txt)">wavydating.com</div></div>
+    </div>
+    <div style="margin-top:44px;font-size:12px;color:var(--muted)">Spots · Events · Connections · v1.3.6 · June 2026</div>
+  </div>
+</div>
+</div><!-- /deck-mode -->
+
+<!-- ██████████████████████████████████████████████
+     BRIEF MODE
+██████████████████████████████████████████████ -->
+<div id="brief-mode">
+<div class="brief-inner">
+
+<!-- COVER -->
+<div class="b-cover">
+  <div class="b-sec-label">W A V Y — S T R A T E G I C G R O W T H B R I E F</div>
+  <div class="b-title">The room is<br>the <em>product.</em><br>We just built the layer.</div>
+  <div class="b-sub">A plain-English breakdown of what Wavy is, why it's different from every other dating app, how it makes money, who it's for, and what to build next — written for the people building it.</div>
+  <div class="b-stats">
+    <div class="bs-item"><div class="bv">3<em>×</em></div><div class="bk">Revenue streams live now</div></div>
+    <div class="bs-item"><div class="bv">$<em>8B</em></div><div class="bk">Dating app market by 2027</div></div>
+    <div class="bs-item"><div class="bv"><em>41</em>%</div><div class="bk">Singles say apps feel fake</div></div>
+    <div class="bs-item"><div class="bv">0</div><div class="bk">Direct competitors doing this</div></div>
+  </div>
+</div>
+
+<!-- SECTION ONE -->
+<div class="b-sec">
+  <div class="b-sec-label">Section One</div>
+  <div class="b-h2">What Wavy actually does — the honest version</div>
+  <p class="b-p">Most dating apps are essentially catalogues. You browse through photos of strangers, swipe left or right based on a 500-character bio, maybe send a message, and wait. The connection happens — if it happens at all — somewhere down the line, away from the app.</p>
+  <p class="b-p">Wavy works the other way around. The connection happens first, in a physical place, and the app is just the layer that makes the people in that place visible to each other. If you're both at the same climbing gym, Wavy can see that. If you're at the same café working on your laptops, it can see that too. It turns the venue into a social context rather than just a backdrop.</p>
+  <p class="b-p">There are five things that make this work together:</p>
+  <div class="b-fg">
+    <div class="b-fc"><div class="b-eye">The Core Mechanic</div><h3>Spots &amp; Events</h3><p>Users create or join real-time location rooms — a table at a café, a badminton court, a networking event. Public ones anyone can drop into; private ones the host controls. Some are permanent (a gym that always has a Wavy spot). Some are live and ephemeral.</p><div class="b-tags"><span>Real-time attendees</span><span>Host controls</span><span>Join requests</span><span>Permanent venues</span></div></div>
+    <div class="b-fc"><div class="b-eye">The Matching Engine</div><h3>Live Matching</h3><p>One tap and you enter a queue. The algorithm finds your closest compatible match nearby. You both get 120 seconds to accept. If you both say yes, a chat opens. If either passes, you go back to the queue. No swiping. No endless browsing.</p><div class="b-tags"><span>PostGIS proximity</span><span>120s mutual window</span><span>Tier-based priority</span><span>Compatibility scoring</span></div></div>
+    <div class="b-fc"><div class="b-eye">Soft Signals</div><h3>Waves</h3><p>A lower-stakes version of interest. Browse nearby people, send a wave — optionally picking a specific photo or prompt you liked and leaving a short note. If you both wave at each other, it auto-matches and opens a chat. No awkward "who messages first."</p><div class="b-tags"><span>Auto-match on mutual</span><span>Like specific content</span><span>150-char note</span><span>Daily limits by tier</span></div></div>
+    <div class="b-fc"><div class="b-eye">The Icebreaker</div><h3>Spot Games</h3><p>Hosts can start a Trivia or Icebreaker game inside any live spot. Real-time, everyone in the room plays together. Trivia scores by speed. Icebreaker collects anonymous answers to a question from all attendees. This is the thing that makes a spot feel alive.</p><div class="b-tags"><span>Trivia (speed-scored)</span><span>Icebreaker (group answers)</span><span>Live leaderboard</span><span>Push notify on start</span></div></div>
+    <div class="b-fc"><div class="b-eye">The Conversation</div><h3>Chat</h3><p>Full messaging — images, GIFs, emoji reactions, reply-to threads, typing indicators, read receipts for paid users. Wave chats never expire. Match chats have a window (24h on Wavy+, 72h on Wavy Pro) that creates a natural urgency to actually meet.</p><div class="b-tags"><span>Supabase Realtime</span><span>6-emoji reactions</span><span>Reply-to threads</span><span>"We Met" rating</span></div></div>
+    <div class="b-fc"><div class="b-eye">Trust Layer</div><h3>Profiles &amp; Safety</h3><p>Up to 6 photos, 500-char bio, 3 prompted answers, 30 interests, full lifestyle attributes. ML selfie verification. Incognito mode for Premium users. Your GPS coordinates never leave the server — the app doesn't even know where you are, only the algorithm does.</p><div class="b-tags"><span>ML selfie verify</span><span>Incognito mode</span><span>GPS server-only</span><span>Your Turn limiter</span></div></div>
+  </div>
+</div>
+
+<!-- SECTION TWO -->
+<div class="b-sec">
+  <div class="b-sec-label">Section Two</div>
+  <div class="b-h2">Why this is different — and why it matters</div>
+  <div class="b-pull"><p><strong>The insight in one sentence:</strong> Physical proximity is the strongest compatibility signal that exists, and no dating app uses it properly. Tinder shows you someone who lives 12km away. Wavy shows you the person sitting three tables over. One is a lottery. The other is gravity.</p></div>
+  <p class="b-p">Let's be honest about what existing apps are. They're catalogues with a chat feature bolted on. You browse, you swipe, you hope the conversation doesn't die in the first three messages. The meeting — the actual reason any of this exists — happens later, somewhere else, after a lot of effort.</p>
+  <p class="b-p">Wavy inverts this. The meeting happens first, even if you don't realise it. You're both at the same place. The app is just the layer that makes that co-presence meaningful.</p>
+  <p class="b-p"><strong>Three specific things make this hard for anyone else to copy:</strong></p>
+  <p class="b-p"><strong>The venue pre-qualifies the match.</strong> If you're both at the same yoga studio at 7am on a Tuesday, you already have more in common than any questionnaire could establish. The choice of venue is a revealed preference, not a stated one. That's a much stronger signal.</p>
+  <p class="b-p"><strong>The icebreaker removes the first-move problem.</strong> Most conversations on dating apps die because one person doesn't know what to say and the other feels the pressure of having to respond. When you've both just answered "What's your most unpopular food opinion?" in the same spot's icebreaker game, you already have something to talk about. The app does the awkward part for you.</p>
+  <p class="b-p"><strong>The 120-second match window creates real urgency.</strong> Not the manufactured urgency of "match expires in 24 hours" — actual urgency, because you might literally both be in the same building. That changes the psychology entirely. It's not "maybe we'll meet someday." It's "do you want to walk over and say hi?"</p>
+  <hr class="b-rule">
+  <h3 style="font-size:16px;font-weight:800;color:#fff;margin-bottom:16px">How Wavy compares to the field</h3>
+  <div class="b-tw">
+    <table>
+      <thead><tr><th>What it does</th><th style="color:var(--accent)">Wavy</th><th>Tinder</th><th>Hinge</th><th>Bumble</th><th>Happn</th></tr></thead>
+      <tbody>
+        <tr><td>Real-time co-location rooms</td><td class="yes">✓ Core</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+        <tr><td>Permanent venue spots</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+        <tr><td>In-app group games</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+        <tr><td>Algorithm-driven live queue</td><td class="yes">✓</td><td style="color:var(--muted)">Browse only</td><td style="color:var(--muted)">Browse only</td><td style="color:var(--muted)">Browse only</td><td style="color:var(--muted)">Browse only</td></tr>
+        <tr><td>Venue partnership potential</td><td class="yes">Native fit</td><td class="no">None</td><td class="no">None</td><td style="color:var(--gold)">Bumble BFF cafés</td><td class="no">None</td></tr>
+        <tr><td>GPS never exposed to client</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+        <tr><td>Selfie liveness verification</td><td class="yes">✓ ML</td><td style="color:var(--muted)">Photo only</td><td style="color:var(--muted)">Photo only</td><td style="color:var(--muted)">Video</td><td class="no">✗</td></tr>
+        <tr><td>Core idea</td><td class="hi">You're here, NOW</td><td style="color:var(--muted)">Hot or not</td><td style="color:var(--muted)">Delete the app</td><td style="color:var(--muted)">Women first</td><td style="color:var(--muted)">Crossed paths</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="b-pull" style="margin-top:16px"><p>Happn is the closest comparison — but Happn shows you paths you've already crossed, passively. Wavy puts you in the same room actively, and gives you tools to connect before you leave. That's a fundamentally different product.</p></div>
+</div>
+
+<!-- SECTION THREE -->
+<div class="b-sec">
+  <div class="b-sec-label">Section Three</div>
+  <div class="b-h2">Who Wavy is for — and how each group comes in</div>
+  <p class="b-p">This isn't a single-segment product. Different people will use Wavy for different reasons, and they'll discover it through completely different channels. The smart move is to design one product but market it six different ways.</p>
+  <div class="b-segs">
+    <div class="b-seg"><div class="bsn">1</div><div><h3>Urban professionals, 25–32</h3><p>They're the highest-converting segment and the core paid user base. They're in coffee shops, coworking spaces, rooftop bars. They've tried the apps. They're exhausted by swiping. The "quality over quantity" pitch lands hard here because it's true to how they actually think about their time. These people have money and they will pay for something that feels worth it.</p><div class="b-tags"><span class="g">Highest paid conversion</span><span>LinkedIn-native</span><span>Co-working spots</span><span>Time-poor</span></div></div></div>
+    <div class="b-seg"><div class="bsn">2</div><div><h3>College students, 18–24</h3><p>The density engine. They're the ones who will seed spots on campus and create the network effects. They have social anxiety about approaching people cold — the icebreaker game is built exactly for them. They're free-heavy, but their virality is unmatched. One campus rep seeding weekly Wavy spots in the library creates a natural cluster of 50–100 active users in six weeks.</p><div class="b-tags"><span class="g">Highest virality</span><span>Campus rep program</span><span>Free-heavy</span><span>Word-of-mouth native</span></div></div></div>
+    <div class="b-seg"><div class="bsn">3</div><div><h3>Fitness communities, 22–35</h3><p>Crossfit gyms, yoga studios, badminton courts, climbing walls. Activity is instant shared identity. These people already have something in common before they've said a word. The permanent venue spot feature is built almost entirely for this use case — a gym with a standing Wavy spot that regulars join automatically. The venue also becomes a distribution partner by self-interest.</p><div class="b-tags"><span class="g">Venue partner target</span><span>High commitment signal</span><span class="g">Premium conversion</span></div></div></div>
+    <div class="b-seg"><div class="bsn">4</div><div><h3>Event &amp; festival goers, 21–34</h3><p>Music festivals, food markets, tech conferences, pop-ups. The social energy is already at its peak. People are already primed to meet strangers. A Spot at a festival is the social layer over the whole event — everyone there joins, the games run, connections start. This is also the clearest path to B2B revenue: event organisers pay to have Wavy power their attendee social experience.</p><div class="b-tags"><span class="g">B2B revenue path</span><span>High density spikes</span><span>Event partner angle</span></div></div></div>
+    <div class="b-seg"><div class="bsn">5</div><div><h3>International students &amp; expats</h3><p>Newly relocated, no social network, often navigating a language barrier. The icebreaker game breaks the ice in a way that bypasses linguistic awkwardness. They're not necessarily looking for a date — they're looking for a community. Bumble BFF tried to solve this and largely failed because it had no venue layer. Wavy has one.</p><div class="b-tags"><span class="r">Underserved need</span><span>Community-first pitch</span><span>Not just dating</span></div></div></div>
+    <div class="b-seg"><div class="bsn">6</div><div><h3>Venue owners &amp; event hosts</h3><p>Not users — partners. But they're worth naming explicitly because they're also a distribution channel. A bar owner who sets up a permanent Wavy spot at their venue is, effectively, a marketing partner. Every customer who walks in and sees "Join the Spot" becomes a potential Wavy user. They benefit (foot traffic data, repeat visits) and we benefit (user acquisition at zero CAC).</p><div class="b-tags"><span class="g">B2B revenue stream</span><span>Zero-CAC distribution</span><span>Featured spot listings</span></div></div></div>
+  </div>
+</div>
+
+<!-- SECTION FOUR -->
+<div class="b-sec">
+  <div class="b-sec-label">Section Four</div>
+  <div class="b-h2">How Wavy makes money — now and later</div>
+  <p class="b-p">There are three revenue streams that are live today. Four more that require relatively little build. Here's the honest case for each.</p>
+  <hr class="b-rule">
+  <h3 style="font-size:15px;font-weight:800;color:#fff;margin-bottom:16px">What's live now: subscriptions</h3>
+  <div class="b-tg">
+    <div class="tc"><div class="tn">Free</div><div class="tp"><sup>$</sup>0</div><p style="font-size:12px;color:var(--muted);margin:8px 0 0">The acquisition engine. Gets people in and creates friction at exactly the right moments.</p><ul><li class="on">1 match per day</li><li class="on">5 waves per day</li><li class="on">Join any spot, play games</li><li>Can't accept live matches</li><li>Women: 1 wave view at a time</li><li>Men / NB: wave inbox locked</li></ul></div>
+    <div class="tc ft"><div class="tb">Most Popular</div><div class="tn">Wavy+</div><div class="tp"><sup>$</sup>12.99<sub>/mo</sub></div><p style="font-size:12px;color:var(--muted);margin:8px 0 0">The conversion workhorse. Unlocks what the core audience actually wants.</p><ul><li class="on">5 matches / day</li><li class="on">15 waves / day</li><li class="on">Accept live matches</li><li class="on">See all received waves</li><li class="on">Read receipts</li><li class="on">$7.99/mo on yearly plan (38% off)</li></ul></div>
+    <div class="tc"><div class="tn">Wavy Pro</div><div class="tp"><sup>$</sup>24.99<sub>/mo</sub></div><p style="font-size:12px;color:var(--muted);margin:8px 0 0">Power users. Priority queue and incognito are genuinely defensible upgrades.</p><ul><li class="on">Unlimited matches + waves</li><li class="on">72h chat window (vs 24h)</li><li class="on">Priority match queue</li><li class="on">Incognito browsing</li><li class="on">$14.99/mo yearly</li></ul></div>
+  </div>
+  <div class="b-pull g" style="margin-top:16px"><p><strong>The retention insight:</strong> At $7.99/mo (yearly Pro), a user retained for 18 months is worth $143.82. The key lever isn't conversion rate — it's getting users to month three. Users who've made a real connection through Wavy don't churn. The product needs to create that first connection as fast as possible.</p></div>
+  <hr class="b-rule">
+  <h3 style="font-size:15px;font-weight:800;color:#fff;margin-bottom:16px">What can be activated with modest build effort</h3>
+  <div class="b-fg">
+    <div class="b-fc"><div class="b-eye">Near-zero build cost</div><h3>Featured Venue Spots</h3><p>Cafés, gyms, and bars pay a monthly fee to have their permanent spot boosted to the top of the nearby list with a "Partner" badge. The venue gets foot traffic data and social proof. We get a recurring B2B revenue stream. Estimated $99–299/venue/month.</p></div>
+    <div class="b-fc"><div class="b-eye">B2B sales motion</div><h3>Sponsored Event Spots</h3><p>Event organisers — conferences, festivals, brand activations — pay for a powered Wavy Spot at their event. Guests join, games run, connections happen. Organiser pays per-event or on a monthly integration plan. Estimated $199–999/event.</p></div>
+    <div class="b-fc"><div class="b-eye">Consumable IAP</div><h3>Queue Boost</h3><p>$2.99 for a single 30-minute priority queue boost. No subscription needed — a one-time in-app purchase. High-frequency, low-friction. Target: Friday/Saturday night, when someone has decided they're going out and wants to move to the front of the line.</p></div>
+    <div class="b-fc"><div class="b-eye">Viral acquisition</div><h3>Gift a Month of Pro</h3><p>Send someone a month of Wavy Pro as a gift — $12.99, runs on existing IAP infrastructure. People gift it to single friends. Every gift is a new paid user acquisition with zero CAC. The referrer also gets social validation for the recommendation.</p></div>
+  </div>
+  <div class="b-pull w" style="margin-top:16px"><p><strong>One to watch carefully:</strong> Wavy for Teams — a B2B version of the Spots + Games mechanic for corporate onboarding and team-building. The icebreaker game in particular is a genuinely useful HR product. It needs separate design work, but the infrastructure is already there. Worth a pilot with 2–3 companies before committing.</p></div>
+</div>
+
+<!-- SECTION FIVE -->
+<div class="b-sec">
+  <div class="b-sec-label">Section Five</div>
+  <div class="b-h2">How to actually get people to use it</div>
+  <div class="b-pull w"><p><strong>The constraint nobody wants to say out loud:</strong> Wavy has a density problem. If nobody else is at a spot, there's nothing to join. The go-to-market plan must solve density first — not distribution. Getting a million downloads in ten cities doesn't work. Getting 500 daily active users in one city does. Then it becomes self-sustaining.</p></div>
+  <div class="b-tl">
+    <div class="b-tli"><div class="b-dot" style="border-color:var(--dim)"></div><div class="b-ph">Foundation — Done</div><h3>The product works. Everything is shipped.</h3><p>Matching, waves, spots, games, chat, subscriptions, notifications, selfie verification — all live. 92 database migrations, 18 edge functions. The infrastructure can handle real users. This is the starting line, not the finish.</p></div>
+    <div class="b-tli"><div class="b-dot now"></div><div class="b-ph">Phase 1 — Now to 3 months</div><h3>Own 1–2 cities. Don't be everywhere.</h3><p>Pick two high-density metros with strong café, gym, and event culture — the kind of cities where people already have active social lives they want to extend, not create from scratch. Then:</p><ul><li>Run "Wavy Nights" — curated events where 80–120 users all join the same spot. These generate the first wave of genuine success stories</li><li>Sign 20 venue partners who create permanent spots, offered 3 months of free Featured status in exchange</li><li>Campus rep program: pay 10 students per university $200/month to host weekly Wavy spots in the library, gym, common areas</li><li>Target: 500 DAU per city before any paid marketing. Density before distribution</li></ul></div>
+    <div class="b-tli"><div class="b-dot"></div><div class="b-ph">Phase 2 — Months 2–6</div><h3>Make "I met them on Wavy" a thing people say</h3><p>Content is the marketing. Real stories from real people beat any ad creative. The goal here is to find the first dozen people who connected through a spot and make their story shareable.</p><ul><li>TikTok / Reels: "Wavy Spot Diaries" — genuine accounts of connections made at spots. No actors, no scripts</li><li>Partner with 3–5 mid-tier lifestyle influencers (50k–500k followers) to host Wavy Spots at events they attend</li><li>UGC incentive: share a screenshot of a connection made in a spot and get 1 month of Pro free</li><li>Weekly "What's happening near you" push digest — editorial framing, not a notification dump</li></ul></div>
+    <div class="b-tli"><div class="b-dot"></div><div class="b-ph">Phase 3 — Months 4–9</div><h3>Venues start paying because the data speaks for itself</h3><p>After density is proven, the Featured Spot pitch becomes easy. The deck is a single slide: "17 connections started at your café last month."</p><ul><li>Launch Featured Spot paid tier with proper self-serve onboarding</li><li>Pitch 5 events / festivals on powered Spots for their attendees</li><li>Begin Wavy for Teams pilot: 3 beta companies, HR-facing</li><li>Referral program live: invite 3 friends, get 2 weeks Pro free</li></ul></div>
+    <div class="b-tli"><div class="b-dot"></div><div class="b-ph">Phase 4 — Month 6 onwards</div><h3>Only then: performance marketing and new cities</h3><p>Paid acquisition only makes sense when the product can retain users. That means D30 retention above 18% and a proven free-to-Pro conversion path. Before that, paid ads are just buying churn. After that, they're buying growth.</p><ul><li>Meta and TikTok ads using UGC testimonial creative — the "I met them at a spot" format</li><li>Expand to new cities only once the first two are profitable at the cohort level</li><li>ASO and editorial pitches to Apple / Google once traction data supports the ask</li></ul></div>
+  </div>
+  <hr class="b-rule">
+  <h3 style="font-size:15px;font-weight:800;color:#fff;margin-bottom:14px">Where to spend time versus money</h3>
+  <div class="b-ch">
+    <table>
+      <thead><tr><th>Channel</th><th>Phase</th><th>Rough CAC</th><th>Virality</th><th>Effort</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td class="hi">Campus rep program</td><td>1</td><td class="yes">$3–8</td><td class="yes">Very high</td><td>Low</td><td class="yes">★★★★★</td></tr>
+        <tr><td class="hi">Venue partnerships (organic)</td><td>1</td><td class="yes">$0</td><td class="yes">High</td><td>Medium</td><td class="yes">★★★★★</td></tr>
+        <tr><td class="hi">Hosted Wavy Nights</td><td>1</td><td>$12–20</td><td class="yes">Very high</td><td>High</td><td class="yes">★★★★</td></tr>
+        <tr><td class="hi">TikTok / Reels UGC</td><td>2</td><td class="yes">$0–5</td><td class="yes">Very high</td><td>Medium</td><td class="yes">★★★★</td></tr>
+        <tr><td class="hi">Mid-tier influencers</td><td>2</td><td>$8–15</td><td>Medium</td><td>Medium</td><td>★★★</td></tr>
+        <tr><td class="hi">Referral program</td><td>3</td><td>$5–12</td><td class="yes">High</td><td>Low</td><td>★★★</td></tr>
+        <tr><td class="hi">Performance ads (Meta/TikTok)</td><td>4</td><td>$18–35</td><td class="no">Low</td><td>High</td><td>★★</td></tr>
+        <tr><td class="hi">App Store ASO</td><td>4</td><td>$2–6</td><td class="no">Low</td><td>Low</td><td>★★★</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION SIX -->
+<div class="b-sec">
+  <div class="b-sec-label">Section Six</div>
+  <div class="b-h2">What to build next, and why</div>
+  <p class="b-p">Every feature on this list was chosen by asking one question: does this keep users coming back, make them more likely to pay, or make the network denser? If it doesn't do at least one of those three things, it's not on the list.</p>
+
+  <div class="b-rphase">
+    <div class="b-rph"><div class="b-rpn">01</div><div class="b-rpi"><h3>Retention — these fix the business first</h3><span>Build these before anything else</span></div></div>
+    <div class="b-rl">
+      <div class="b-ri"><div class="b-rd" style="background:var(--coral)"></div><div><h4>Spot Stories — 24-hour photos inside a spot</h4><p>Users post a photo from inside an active spot, visible only to attendees for 24 hours. This does three things at once: creates FOMO for people who weren't there, drives repeat visits to the same venues, and generates organic content that markets the app without any spend. It's Instagram Stories, but hyperlocal and ephemeral in a way that actually matters.</p></div></div>
+      <div class="b-ri"><div class="b-rd" style="background:var(--coral)"></div><div><h4>"Going Tonight" — pre-announce your arrival at a venue</h4><p>Users mark that they'll be at a specific place at a specific time. Nearby users see it. This is the feature that gives people a reason to open Wavy at 5pm every day. It's not about dating specifically — it's about the anticipation of an interesting evening. That daily habit is worth more than any push notification campaign.</p></div></div>
+      <div class="b-ri"><div class="b-rd" style="background:var(--coral)"></div><div><h4>Mutual Spot History badge on profiles</h4><p>"You've both been to the same climbing gym three times." The RPC for this already exists (get_user_spot_history). It needs a UI card on the profile view — probably a day of build. The impact is outsized because it tells a story about compatibility that no algorithm score can. Shared real experiences are the strongest social signal.</p></div></div>
+      <div class="b-ri"><div class="b-rd" style="background:var(--gold)"></div><div><h4>Streak for consecutive days with a spot visit</h4><p>A Duolingo-style streak counter. Free users see it; Pro users get one streak freeze per month. Simple to build, effective at driving daily active usage, and a direct upsell hook into the subscription. Gamification doesn't have to be complex to work — it just has to create a number people don't want to lose.</p></div></div>
+      <div class="b-ri"><div class="b-rd" style="background:var(--gold)"></div><div><h4>Smarter re-engagement pushes — contextual, not generic</h4><p>Instead of "You have new matches," send: "[Blueprint Coffee] has 4 people right now — including someone who waved at you." Contextual FOMO that references a specific place the user has visited before is meaningfully better than generic nudges. The location data to make this work is already in the system.</p></div></div>
+    </div>
+  </div>
+
+  <div class="b-rphase">
+    <div class="b-rph"><div class="b-rpn">02</div><div class="b-rpi"><h3>Social expansion — these grow the top of funnel</h3><span>Build once retention is above target</span></div></div>
+    <div class="b-rl">
+      <div class="b-ri"><div class="b-rd" style="background:var(--coral)"></div><div><h4>Spot Wave — wave to the whole room at once</h4><p>One button: "Wave the room." A gentle, anonymous group signal to everyone in the spot. Recipients see "Someone in this Spot waved at the group" — they can wave back or browse the roster. It removes the pressure of singling someone out while still expressing interest. The mutual auto-match logic handles the rest.</p></div></div>
+      <div class="b-ri"><div class="b-rd" style="background:var(--gold)"></div><div><h4>Friend Bring-Along</h4><p>Invite a real-world friend to join the same spot — a group of two entering together. This unlocks a completely different use case: "night out with your friend, you both meet people." The addressable market immediately broadens from solo singles to friend groups on a night out. This is probably the feature with the highest potential to escape the "dating app" category.</p></div></div>
+      <div class="b-ri"><div class="b-rd" style="background:var(--gold)"></div><div><h4>More game types — Speed Round, This or That, Guess Who</h4><p>Spot Games are the single most differentiated feature in the product and there's no competition. Expanding the library doesn't require rethinking anything — the broadcast infrastructure is already built. Each new game type increases time-in-spot and gives hosts a reason to start something new.</p></div></div>
+    </div>
+  </div>
+
+  <div class="b-rphase">
+    <div class="b-rph"><div class="b-rpn">03</div><div class="b-rpi"><h3>Monetisation infrastructure</h3><span>Build as B2B revenue becomes real</span></div></div>
+    <div class="b-rl">
+      <div class="b-ri"><div class="b-rd" style="background:var(--coral)"></div><div><h4>Venue partner dashboard</h4><p>A simple web dashboard showing venue partners how many Wavy users visited their spot this week, peak hours, game engagement, and how many connections started at their venue. This data makes the Featured Spot subscription sell itself. "17 connections started at your café last month" is more powerful than any sales pitch.</p></div></div>
+      <div class="b-ri"><div class="b-rd" style="background:var(--gold)"></div><div><h4>Queue Boost as consumable IAP</h4><p>$2.99 for 30 minutes at the top of the match queue. No subscription needed. Runs on existing IAP infrastructure. Target: Friday/Saturday evenings, impulse purchases. Each sale is also a nudge toward the Pro subscription, which costs the same per week.</p></div></div>
+      <div class="b-ri"><div class="b-rd" style="background:var(--gold)"></div><div><h4>Gift a month of Pro</h4><p>Let users send a friend a month of Wavy Pro. Every gift is a new paid user acquisition at zero CAC — the gifter pays, the recipient becomes a user, and if the product works, they stay. The social signal ("my friend thinks I should be on this") is also a better acquisition mechanism than any ad creative.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION SEVEN -->
+<div class="b-sec">
+  <div class="b-sec-label">Section Seven</div>
+  <div class="b-h2">Where to aim, plainly</div>
+  <p class="b-p">This is the honest version of the strategic priority — not what sounds good in a pitch deck, but what will actually make the business work.</p>
+  <div class="b-focus">
+    <div class="b-fci pr"><div class="fe">Do this right now — highest leverage</div><h4>Density + venues</h4><ul><li>Sign 20 venue partners in 1 target city</li><li>Run 4 Wavy Nights in the first 8 weeks</li><li>Campus reps active on 3 campuses</li><li>Hit 500 DAU before any paid marketing</li></ul></div>
+    <div class="b-fci se"><div class="fe">Build in parallel</div><h4>Retention mechanics</h4><ul><li>Spot Stories (UGC + FOMO driver)</li><li>"Going Tonight" pre-announce</li><li>Mutual Spot History on profiles</li><li>Contextual re-engagement pushes</li></ul></div>
+    <div class="b-fci dg"><div class="fe">Avoid until density is solved</div><h4>Don't do these yet</h4><ul><li>No paid ads — CAC won't hold without density</li><li>No brand spend — earned media first</li><li>No new cities until the first two work</li><li>No feature building that isn't on this list</li></ul></div>
+    <div class="b-fci"><div class="fe">Numbers that tell the truth</div><h4 style="color:var(--txt)">North Star Metrics</h4><ul><li>DAU per city — target 500 before marketing</li><li>Spots joined per DAU — target above 1.5</li><li>D30 retention — target above 18%</li><li>Free → Pro conversion — target above 6%</li><li>Connections per Spot — target above 0.8</li></ul></div>
+  </div>
+  <p class="b-p" style="margin-top:24px">The one-line version of all of this: Dating apps failed because they separated discovery from reality. You swipe on someone you'll never be in the same room with. Wavy inverts that. The room is the product. The app is just the layer that makes the room social.</p>
+  <p class="b-p"><strong>Build density first. Monetise second. Scale third. In that order, and not a step sooner.</strong></p>
+  <div class="b-pull"><p><strong>The pitch for any audience, in any room:</strong> "You're already in the same place. Wavy just makes the introduction."</p></div>
+</div>
+
+<!-- CLOSING -->
+<div class="b-close">
+  <img src="assets/White.png" alt="Wavy" style="height:36px;width:auto;margin-bottom:18px;opacity:.9" />
+  <p>Spots. Events. Connections. &nbsp;·&nbsp; Stop swiping. Start showing up. &nbsp;·&nbsp; Strategic Growth Brief, June 2026</p>
+</div>
+
+</div><!-- /brief-inner -->
+</div><!-- /brief-mode -->
+
+<script>
+// ── MODE SWITCHING ──
+function setMode(m) {
+  const d = document.getElementById('deck-mode');
+  const b = document.getElementById('brief-mode');
+  document.querySelectorAll('.mb-tab').forEach(t => t.classList.remove('active'));
+  if(m==='deck'){
+    d.style.display='block'; b.style.display='none';
+    document.querySelectorAll('.mb-tab')[0].classList.add('active');
+  } else {
+    d.style.display='none'; b.style.display='block';
+    document.querySelectorAll('.mb-tab')[1].classList.add('active');
+  }
+}
+
+// ── DECK NAVIGATION ──
+const slides = Array.from(document.querySelectorAll('.slide'));
+const total = slides.length;
+let cur = 0, anim = false;
+document.getElementById('tot').textContent = total;
+
+function goTo(n) {
+  if(anim) return;
+  const nxt = Math.max(0, Math.min(n, total-1));
+  if(nxt===cur) return;
+  anim = true;
+  const dir = nxt > cur ? 'ex-l' : 'ex-r';
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add(dir);
+  const prev = cur; cur = nxt;
+  setTimeout(()=>{ slides[prev].classList.remove(dir); anim=false; }, 320);
+  slides[cur].classList.add('active');
+  const pct = ((cur+1)/total*100).toFixed(2);
+  document.getElementById('progress').style.width = pct+'%';
+  document.getElementById('cur').textContent = cur+1;
+  document.getElementById('np').style.opacity = cur===0 ? '0' : '';
+  document.getElementById('nn').style.opacity = cur===total-1 ? '0' : '';
+}
+function go(d){ goTo(cur+d); }
+document.addEventListener('keydown', e=>{
+  if(document.getElementById('brief-mode').style.display==='block') return;
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='ArrowDown'){e.preventDefault();go(1);}
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(-1);}
+  if(e.key==='Home') goTo(0);
+  if(e.key==='End') goTo(total-1);
+});
+document.getElementById('deck-mode').addEventListener('click', e=>{
+  if(e.target.closest('.nav-a')) return;
+  go(e.clientX > window.innerWidth/2 ? 1 : -1);
+});
+let tx=0;
+document.addEventListener('touchstart', e=>{ tx=e.touches[0].clientX; },{passive:true});
+document.addEventListener('touchend', e=>{
+  if(document.getElementById('brief-mode').style.display==='block') return;
+  const dx=tx-e.changedTouches[0].clientX;
+  if(Math.abs(dx)>40) go(dx>0?1:-1);
+},{passive:true});
+document.getElementById('np').style.opacity='0';
+</script>
+</body>
+</html>

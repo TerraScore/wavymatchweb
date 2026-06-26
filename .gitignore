@@ -1,0 +1,9 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+
+# Local tooling — not part of the published site
+.claude/
+.agents/
+node_modules/
+skills-lock.json

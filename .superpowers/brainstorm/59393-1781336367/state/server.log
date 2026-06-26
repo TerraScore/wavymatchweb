@@ -1,0 +1,9 @@
+{"type":"server-started","port":59990,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:59990","screen_dir":"/Users/omerkhan/Desktop/wavywebsite/.superpowers/brainstorm/59393-1781336367/content","state_dir":"/Users/omerkhan/Desktop/wavywebsite/.superpowers/brainstorm/59393-1781336367/state"}
+{"type":"screen-added","file":"/Users/omerkhan/Desktop/wavywebsite/.superpowers/brainstorm/59393-1781336367/content/visual-style.html"}
+{"source":"user-event","type":"click","text":"CINEMATIC · DARK · GLOWING\n      \n    \n    \n      Cinematic Dark\n      Dark backgrounds with glowing rose halos, depth-of-field blur on background characters. Matches Wavy's #0B0712 dark brand. Premium Spotify/Apple feel.","choice":"b","id":null,"timestamp":1781336512536}
+{"type":"screen-added","file":"/Users/omerkhan/Desktop/wavywebsite/.superpowers/brainstorm/59393-1781336367/content/waiting-1.html"}
+{"type":"screen-added","file":"/Users/omerkhan/Desktop/wavywebsite/.superpowers/brainstorm/59393-1781336367/content/characters.html"}
+{"source":"user-event","type":"click","text":"JUST JOINED\n        \n        \n          \n            \n          \n        \n        \n          \n            \n          \n        \n      \n      ILLUSTRATED · EXPRESSIVE · WARM\n    \n    \n      Illustrated Characters\n      Stylised faces with expressions — initially blank/bored, then smiling as connection happens. More work to animate but delivers the most emotional payoff.","choice":"c","id":null,"timestamp":1781336655468}
+{"type":"screen-added","file":"/Users/omerkhan/Desktop/wavywebsite/.superpowers/brainstorm/59393-1781336367/content/waiting-2.html"}
+{"type":"screen-added","file":"/Users/omerkhan/Desktop/wavywebsite/.superpowers/brainstorm/59393-1781336367/content/storyboard.html"}
+{"type":"server-stopped","reason":"idle timeout"}
