@@ -362,3 +362,18 @@
     });
   });
 })();
+
+/* ---- QR widget dismiss ---- */
+(function () {
+  var widget = document.getElementById('qrWidget');
+  var closeBtn = document.getElementById('qrClose');
+  if (!widget || !closeBtn) return;
+  if (sessionStorage.getItem('qrDismissed')) {
+    widget.classList.add('qr-widget--dismissed');
+  }
+  closeBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    widget.classList.add('qr-widget--dismissed');
+    sessionStorage.setItem('qrDismissed', '1');
+  });
+}());

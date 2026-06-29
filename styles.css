@@ -447,3 +447,94 @@ strong { font-weight: 600; }
   .hero { background-image: url("assets/date-bg.jpg"); background-size: cover; background-position: center; }
   .cta { background-image: url("assets/cta-bg.jpg"); background-size: cover; background-position: center; }
 }
+
+/* ===== QR Download Widget ===== */
+.qr-widget {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, var(--rose-bright), var(--rose));
+  border-radius: 100px;
+  padding: 10px 18px;
+  cursor: default;
+  box-shadow: 0 8px 32px -8px rgba(211,28,92,.5);
+  transition: border-radius .25s var(--ease), padding .25s var(--ease);
+  user-select: none;
+}
+.qr-widget:hover,
+.qr-widget:focus-within {
+  border-radius: 16px;
+  padding: 14px 16px 10px;
+}
+.qr-widget__qr {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height .3s var(--ease), opacity .2s ease;
+  display: flex;
+  justify-content: center;
+}
+.qr-widget:hover .qr-widget__qr,
+.qr-widget:focus-within .qr-widget__qr {
+  max-height: 200px;
+  opacity: 1;
+}
+.qr-widget__qr svg {
+  width: 160px;
+  height: 160px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 10px;
+  display: block;
+  flex-shrink: 0;
+  box-sizing: content-box;
+}
+.qr-widget__close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  color: var(--rose);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  z-index: 1;
+  padding: 0;
+  transition: background .15s, color .15s;
+}
+.qr-widget__close:hover { background: var(--rose); color: #fff; }
+.qr-widget:hover .qr-widget__close,
+.qr-widget:focus-within .qr-widget__close { display: flex; }
+.qr-widget__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.qr-widget__label svg {
+  color: #fff;
+  flex-shrink: 0;
+}
+.qr-widget__label span {
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: .75rem;
+  color: #fff;
+  white-space: nowrap;
+  letter-spacing: .02em;
+}
+.qr-widget--dismissed { display: none !important; }
+@media (max-width: 1024px), (pointer: coarse) { .qr-widget { display: none; } }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Download Wavy</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    background: #15070E;
+    color: #fff;
+    gap: 1rem;
+    text-align: center;
+    padding: 2rem;
+    box-sizing: border-box;
+  }
+  a { color: #FF4D8D; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 0; }
+</style>
+<script>
+  (function () {
+    var ua = navigator.userAgent;
+    if (/iPhone|iPad|iPod/i.test(ua)) {
+      location.replace('https://apps.apple.com/us/app/wavy-live-spots-networking/id6763865183');
+    } else if (/Android/i.test(ua)) {
+      location.replace('https://play.google.com/store/apps/details?id=com.wavydating.app');
+    }
+  }());
+</script>
+</head>
+<body>
+  <p>Redirecting to the app&hellip;</p>
+  <p style="font-size:.9rem;opacity:.6">
+    <a href="https://apps.apple.com/us/app/wavy-live-spots-networking/id6763865183">App Store</a>
+    &nbsp;&middot;&nbsp;
+    <a href="https://play.google.com/store/apps/details?id=com.wavydating.app">Google Play</a>
+  </p>
+</body>
+</html>
