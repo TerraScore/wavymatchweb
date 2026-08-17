@@ -85,63 +85,291 @@
     cio.observe(counter);
   }
 
-  /* ---- live match demo loop (searching → match → chat) ---- */
-  const offer = $("#offerCard");
-  const match = $("#matchCard");
-  const yesBtn = $("#offerYes");
-  const time = $(".appbar__time");
+  /* ---- Showcase carousel: all 8 real screenshots, arrows + dots + keyboard + swipe + autoplay ---- */
+  const carShotImg = $("#carShotImg");
+  const carCaption = $("#carCaption");
+  const carDots = $("#carDots");
+  const carPrev = $("#carPrev");
+  const carNext = $("#carNext");
+  if (carShotImg && carDots && carPrev && carNext) {
+    const slides = [
+      { src: "assets/showcase-home-feed.jpg", alt: "Wavy home feed showing nearby Events with a 'You're hosting' badge on a Badminton Mixer card", caption: "Your home feed: what's happening nearby, right now" },
+      { src: "assets/showcase-pick-a-plan-sheet.jpg", alt: "Wavy 'Pick a Plan' sheet, badminton, bike ride, chai, sutta, drinks, games, pizza and movie activity icons", caption: "Pick a Plan: badminton, chai, drinks, or make up your own" },
+      { src: "assets/showcase-plan-invite-bike-ride.jpg", alt: "A Wavy Plan invite: 'Ishita's plan, you in?' with a bike ride icon and a Join the Plan button", caption: "They get the invite instantly, no group chat required" },
+      { src: "assets/showcase-venue-ice-treat-cafe.jpg", alt: "A Wavy Spot: Ice Treat Cafe, showing 63 people here and a Play Daily Quiz button", caption: "Drop into a Spot and see who's already there" },
+      { src: "assets/showcase-event-badminton-detail.jpg", alt: "A Wavy Event: Badminton Mixer, ₹50 ticket, showing who's here and a Group Chat button", caption: "Hosted Events show who's coming before you show up" },
+      { src: "assets/showcase-group-chat.jpg", alt: "A Wavy Group Chat for an Event, with members joining and chatting", caption: "Everyone in the Plan or Event, one group chat" },
+    ];
+    let carIndex = 0;
+    let carTimer = null;
 
-  if (offer && match) {
-    let timers = [];
-    const clear = () => { timers.forEach(clearTimeout); timers = []; };
-    const wait = (fn, ms) => timers.push(setTimeout(fn, ms));
+    carDots.innerHTML = slides
+      .map((s, i) => `<button type="button" class="carousel__dot${i === 0 ? " is-active" : ""}" role="tab" aria-label="Screenshot ${i + 1} of ${slides.length}" aria-selected="${i === 0}"></button>`)
+      .join("");
+    const dotEls = $$(".carousel__dot", carDots);
 
-    const showMatch = () => {
-      offer.hidden = true;
-      match.hidden = false;
+    const renderSlide = (i, instant) => {
+      const s = slides[i];
+      const apply = () => {
+        carShotImg.setAttribute("src", s.src);
+        carShotImg.setAttribute("alt", s.alt);
+        carShotImg.classList.remove("is-swapping");
+      };
+      if (reduce || instant) { apply(); }
+      else {
+        carShotImg.classList.add("is-swapping");
+        setTimeout(apply, 200);
+      }
+      if (carCaption) carCaption.textContent = s.caption;
+      dotEls.forEach((d, di) => {
+        d.classList.toggle("is-active", di === i);
+        d.setAttribute("aria-selected", String(di === i));
+      });
     };
-    const reset = () => {
-      match.hidden = true;
-      offer.hidden = false;
-      // re-trigger card entrance animation
-      offer.style.animation = "none";
-      // eslint-disable-next-line no-unused-expressions
-      offer.offsetHeight;
-      offer.style.animation = "";
+
+    const goTo = (i) => {
+      carIndex = (i + slides.length) % slides.length;
+      renderSlide(carIndex);
     };
 
-    const cycle = () => {
-      clear();
-      reset();
-      wait(showMatch, 2600);   // auto "both say yes"
-      wait(cycle, 7200);       // loop back to a fresh offer
-    };
+    carPrev.addEventListener("click", () => { goTo(carIndex - 1); restartCarAutoplay(); });
+    carNext.addEventListener("click", () => { goTo(carIndex + 1); restartCarAutoplay(); });
+    dotEls.forEach((d, i) => d.addEventListener("click", () => { goTo(i); restartCarAutoplay(); }));
 
-    // let users trigger it themselves too
-    if (yesBtn) {
-      yesBtn.addEventListener("click", () => { clear(); showMatch(); wait(cycle, 4600); });
+    const carousel = $(".carousel");
+    carousel.setAttribute("tabindex", "0");
+    carousel.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") { e.preventDefault(); goTo(carIndex - 1); restartCarAutoplay(); }
+      if (e.key === "ArrowRight") { e.preventDefault(); goTo(carIndex + 1); restartCarAutoplay(); }
+    });
+
+    /* touch swipe */
+    let touchX = null;
+    const stage = $(".carousel__shot");
+    stage.addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+    stage.addEventListener("touchend", (e) => {
+      if (touchX === null) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 40) { dx > 0 ? goTo(carIndex - 1) : goTo(carIndex + 1); restartCarAutoplay(); }
+      touchX = null;
+    });
+
+    function restartCarAutoplay() {
+      if (reduce) return;
+      clearInterval(carTimer);
+      carTimer = setInterval(() => goTo(carIndex + 1), 4500);
     }
-
-    // ticking timer in the status bar for liveliness
-    if (time && !reduce) {
-      let s = 8;
-      setInterval(() => {
-        s = (s + 1) % 60;
-        time.textContent = "0:" + String(s).padStart(2, "0");
-      }, 1000);
-    }
-
-    if (!reduce) {
-      // start only when hero is on screen
-      const hio = new IntersectionObserver(
-        (e) => {
-          if (e[0].isIntersecting) { cycle(); }
-          else { clear(); reset(); }
-        },
-        { threshold: 0.3 }
+    if (!reduce && "IntersectionObserver" in window) {
+      const cio = new IntersectionObserver(
+        (e) => (e[0].isIntersecting ? restartCarAutoplay() : clearInterval(carTimer)),
+        { threshold: 0.4 }
       );
-      hio.observe(offer.closest(".phone"));
+      cio.observe(carousel);
     }
+    carousel.addEventListener("mouseenter", () => clearInterval(carTimer));
+    carousel.addEventListener("mouseleave", () => restartCarAutoplay());
+    carousel.addEventListener("focusin", () => clearInterval(carTimer));
+    carousel.addEventListener("focusout", () => restartCarAutoplay());
+  }
+
+  /* ---- Spots & Events toggle: bring the relevant screenshot to front ---- */
+  const spotsToggleBtns = $$(".spots__toggle-btn");
+  const spotsShotEls = $$(".spots__shot");
+  const spotsCaption = $("#spotsCaption");
+  const spotsCaptions = {
+    a: "☕ Ice Treat Cafe · 63 people here right now",
+    b: "🏸 Badminton Mixer · Tomorrow, 9 PM · 4 going",
+  };
+  if (spotsToggleBtns.length && spotsShotEls.length) {
+    const selectSpot = (key) => {
+      spotsToggleBtns.forEach((b) => {
+        const on = b.getAttribute("data-target") === key;
+        b.classList.toggle("is-active", on);
+        b.setAttribute("aria-selected", String(on));
+      });
+      spotsShotEls.forEach((el) => {
+        const on = el.getAttribute("data-key") === key;
+        el.classList.toggle("is-front", on);
+        el.classList.toggle("is-back", !on);
+      });
+      if (spotsCaption) spotsCaption.textContent = spotsCaptions[key];
+    };
+    spotsToggleBtns.forEach((b) => b.addEventListener("click", () => selectSpot(b.getAttribute("data-target"))));
+    selectSpot("a");
+  }
+
+  /* ---- Why compare: swipe button (goes nowhere) vs Send Plan button (actually works) ---- */
+  const swipeBtn = $("#swipeBtn");
+  const facegrid = $("#facegrid");
+  const swipeNote = $("#swipeNote");
+  if (swipeBtn && facegrid && swipeNote) {
+    const swipeLines = [
+      "Hundreds of faces. Endless swiping. Zero actual plans.",
+      "Nope. Still nothing.",
+      "That's 200 swipes now. Still no plans.",
+      "Honestly, impressive commitment to going nowhere.",
+    ];
+    let swipeCount = 0;
+    swipeBtn.addEventListener("click", () => {
+      swipeCount++;
+      if (!reduce) {
+        facegrid.classList.remove("is-shaking");
+        void facegrid.offsetWidth;
+        facegrid.classList.add("is-shaking");
+      }
+      swipeNote.textContent = swipeLines[Math.min(swipeCount, swipeLines.length - 1)];
+    });
+  }
+
+  const sendPlanBtn = $("#sendPlanBtn");
+  const sendPlanNote = $("#sendPlanNote");
+  const sendPlanReplies = $("#plansendReplies");
+  if (sendPlanBtn && sendPlanNote) {
+    const defaultLabel = "Send Plan";
+    const defaultNote = sendPlanNote.textContent;
+    const label = $(".plansend__btn-label", sendPlanBtn);
+    let sendTimer = null;
+    sendPlanBtn.addEventListener("click", () => {
+      clearTimeout(sendTimer);
+      sendPlanBtn.classList.add("is-sent");
+      sendPlanBtn.disabled = true;
+      if (label) label.textContent = "Sent";
+      sendPlanNote.textContent = "Sent. Someone already said yes.";
+      if (sendPlanReplies) sendPlanReplies.classList.add("is-visible");
+      sendTimer = setTimeout(() => {
+        sendPlanBtn.classList.remove("is-sent");
+        sendPlanBtn.disabled = false;
+        if (label) label.textContent = defaultLabel;
+        sendPlanNote.textContent = defaultNote;
+        if (sendPlanReplies) sendPlanReplies.classList.remove("is-visible");
+      }, 2600);
+    });
+  }
+
+  /* ---- Plan builder: custom activity -> time -> spot -> send -> payoff wizard ---- */
+  const planBuilder = $("#planBuilder");
+  if (planBuilder) {
+    const panels = $$(".plan-builder__panel", planBuilder);
+    const dots = $$(".plan-builder__dot", planBuilder);
+    const summary = $("#pbSummary");
+    const spotInput = $("#pbSpotInput");
+    const sendBtn = $("#pbSendBtn");
+    const restartBtn = $("#pbRestartBtn");
+    let state = { activity: "", emoji: "", time: "", spot: "" };
+    let step = 0;
+
+    const goToStep = (i) => {
+      step = Math.max(0, Math.min(i, panels.length - 1));
+      panels.forEach((p) => p.classList.toggle("is-active", Number(p.getAttribute("data-step")) === step));
+      dots.forEach((d, di) => d.classList.toggle("is-active", di === step));
+    };
+
+    const updateSummary = () => {
+      if (!summary) return;
+      const parts = [`${state.emoji} ${state.activity}`.trim(), state.time, state.spot].filter(Boolean);
+      summary.textContent = parts.length ? parts.join(" · ") : "Pick an activity, a time, and a spot.";
+    };
+
+    const selectChip = (group, chip, mutate) => {
+      $$(".plan-builder__chip", group).forEach((c) => c.classList.remove("is-selected"));
+      chip.classList.add("is-selected");
+      mutate();
+      updateSummary();
+      setTimeout(() => goToStep(step + 1), reduce ? 0 : 300);
+    };
+
+    const activityGroup = $("#pbActivities");
+    if (activityGroup) {
+      $$(".plan-builder__chip", activityGroup).forEach((chip) => {
+        chip.addEventListener("click", () => selectChip(activityGroup, chip, () => {
+          state.activity = chip.getAttribute("data-value");
+          state.emoji = $(".plan-builder__emoji", chip)?.textContent || "";
+        }));
+      });
+    }
+
+    const timeGroup = $("#pbTimes");
+    if (timeGroup) {
+      $$(".plan-builder__chip", timeGroup).forEach((chip) => {
+        chip.addEventListener("click", () => selectChip(timeGroup, chip, () => { state.time = chip.getAttribute("data-value"); }));
+      });
+    }
+
+    const spotGroup = $("#pbSpots");
+    if (spotGroup) {
+      $$(".plan-builder__chip", spotGroup).forEach((chip) => {
+        chip.addEventListener("click", () => selectChip(spotGroup, chip, () => {
+          state.spot = chip.getAttribute("data-value");
+          if (spotInput) spotInput.value = "";
+        }));
+      });
+    }
+    if (spotInput) {
+      spotInput.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" || !spotInput.value.trim()) return;
+        e.preventDefault();
+        if (spotGroup) $$(".plan-builder__chip", spotGroup).forEach((c) => c.classList.remove("is-selected"));
+        state.spot = spotInput.value.trim();
+        updateSummary();
+        setTimeout(() => goToStep(step + 1), reduce ? 0 : 200);
+      });
+    }
+
+    $$("[data-back]", planBuilder).forEach((b) => b.addEventListener("click", () => goToStep(step - 1)));
+
+    if (sendBtn) {
+      sendBtn.addEventListener("click", () => {
+        sendBtn.disabled = true;
+        const label = sendBtn.textContent;
+        sendBtn.textContent = "Sending…";
+        setTimeout(() => {
+          goToStep(4);
+          sendBtn.disabled = false;
+          sendBtn.textContent = label;
+        }, reduce ? 50 : 700);
+      });
+    }
+
+    if (restartBtn) {
+      restartBtn.addEventListener("click", () => {
+        state = { activity: "", emoji: "", time: "", spot: "" };
+        $$(".plan-builder__chip", planBuilder).forEach((c) => c.classList.remove("is-selected"));
+        if (spotInput) spotInput.value = "";
+        updateSummary();
+        goToStep(0);
+      });
+    }
+
+    updateSummary();
+  }
+
+  /* ---- Live Match demo: click "Tap in" → searching → matched → chat ---- */
+  const liveDemoCard = $("#liveDemoCard");
+  const liveDemoBtn = $("#liveDemoBtn");
+  const liveDemoStatus = $("#liveDemoStatus");
+  if (liveDemoCard && liveDemoBtn && liveDemoStatus) {
+    let demoTimers = [];
+    const clearDemo = () => { demoTimers.forEach(clearTimeout); demoTimers = []; };
+    const wait = (fn, ms) => demoTimers.push(setTimeout(fn, ms));
+
+    const setState = (state, status) => {
+      liveDemoCard.setAttribute("data-state", state);
+      liveDemoStatus.textContent = status;
+    };
+
+    const runDemo = () => {
+      clearDemo();
+      liveDemoBtn.disabled = true;
+      liveDemoBtn.textContent = "Finding someone…";
+      setState("searching", "Finding someone nearby…");
+      wait(() => {
+        setState("matched", "Matched! Say hi 👋");
+        liveDemoBtn.disabled = false;
+        liveDemoBtn.textContent = "Tap in again";
+      }, reduce ? 50 : 1500);
+    };
+
+    liveDemoBtn.addEventListener("click", runDemo);
   }
 
   /* ---- form submissions → Web3Forms (emails each submission to you) ---- */
@@ -285,7 +513,7 @@
   /* ---- hero mouse parallax (uses CSS translate so it composes with float animations) ---- */
   const heroEl = $(".hero");
   if (heroEl && !reduce && finePointer) {
-    const layers = [[$(".orb--rose"), 34], [$(".orb--blue"), 22], [$(".radar"), 18], [$(".phone"), -12]].filter((l) => l[0]);
+    const layers = [[$(".orb--rose"), 34], [$(".orb--blue"), 22], [$(".hero__shot"), -10]].filter((l) => l[0]);
     heroEl.addEventListener("mousemove", (e) => {
       const r = heroEl.getBoundingClientRect();
       const cx = (e.clientX - r.left) / r.width - 0.5;
@@ -294,59 +522,6 @@
     });
     heroEl.addEventListener("mouseleave", () => layers.forEach(([el]) => { el.style.translate = ""; }));
   }
-
-  /* ---- interactive Join Spot (adds you to the people list) ---- */
-  const joinBtn = $("#joinSpotBtn");
-  if (joinBtn) {
-    const people = $("#spotPeople");
-    const moreChip = $("#spotMore");
-    const countEl = $("#spotCount");
-    const BASE = 128;
-    const NAMED = 4;
-    let joined = false;
-    const render = () => {
-      const count = BASE + (joined ? 1 : 0);
-      const shown = NAMED + (joined ? 1 : 0);
-      if (countEl) countEl.textContent = count;
-      if (moreChip) moreChip.textContent = "+" + (count - shown);
-      joinBtn.textContent = joined ? "Joined ✓ · Leave Spot" : "Join this Spot";
-      joinBtn.classList.toggle("is-joined", joined);
-      joinBtn.setAttribute("aria-pressed", String(joined));
-    };
-    joinBtn.addEventListener("click", () => {
-      joined = !joined;
-      if (joined) {
-        const you = document.createElement("span");
-        you.className = "ava ava--you" + (reduce ? "" : " ava--in");
-        you.id = "spotYou";
-        you.textContent = "You";
-        if (people && moreChip) people.insertBefore(you, moreChip);
-      } else {
-        const you = $("#spotYou");
-        if (you) you.remove();
-      }
-      render();
-    });
-  }
-
-  /* ---- background video: play only while visible, honour reduced-motion ---- */
-  $$("video.cta__video, video.hero__video").forEach((v) => {
-    if (reduce) {
-      v.removeAttribute("autoplay");
-      try { v.pause(); } catch (e) { /* noop */ }
-      return;
-    }
-    const play = () => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
-    if ("IntersectionObserver" in window) {
-      const vio = new IntersectionObserver(
-        (es) => es.forEach((e) => (e.isIntersecting ? play() : v.pause())),
-        { threshold: 0.12 }
-      );
-      vio.observe(v);
-    } else {
-      play();
-    }
-  });
 
   /* ---- smooth anchor scroll with nav offset (fallback for older browsers) ---- */
   $$('a[href^="#"]').forEach((a) => {
@@ -376,4 +551,17 @@
     widget.classList.add('qr-widget--dismissed');
     sessionStorage.setItem('qrDismissed', '1');
   });
+
+  /* Step out of the way once the footer (and its social links) scroll into view,
+     so the fixed bottom-right widget never sits on top of them. */
+  var footer = document.querySelector('.foot');
+  if (footer && 'IntersectionObserver' in window) {
+    var footerIo = new IntersectionObserver(
+      function (entries) {
+        widget.classList.toggle('qr-widget--footer-near', entries[0].isIntersecting);
+      },
+      { rootMargin: '0px 0px -20% 0px' }
+    );
+    footerIo.observe(footer);
+  }
 }());

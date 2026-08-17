@@ -7,3 +7,6 @@ Thumbs.db
 .agents/
 node_modules/
 skills-lock.json
+
+# Raw source screenshots (reference material only — cropped/renamed copies live in assets/)
+appss/

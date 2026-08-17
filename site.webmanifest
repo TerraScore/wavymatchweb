@@ -1,7 +1,7 @@
 {
-  "name": "Wavy: Live, Spots & Networking",
+  "name": "Wavy: Plans, Spots & Events",
   "short_name": "Wavy",
-  "description": "Go live to meet someone nearby, or drop into a Spot to find your people — dating, networking, and real connection in real time.",
+  "description": "Send a Plan, discover Spots and Events nearby, or go live to meet someone right now.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
