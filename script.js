@@ -59,39 +59,9 @@
     if (strike) strike.classList.add("in-view");
   }
 
-  /* ---- count up (0 swipes) ---- */
-  const counter = $("[data-count]");
-  if (counter && !reduce) {
-    const target = 0; // it's the punchline: zero swipes
-    const start = 240;
-    let done = false;
-    const run = () => {
-      if (done) return;
-      done = true;
-      const dur = 1100;
-      const t0 = performance.now();
-      const tick = (now) => {
-        const p = Math.min((now - t0) / dur, 1);
-        const eased = 1 - Math.pow(1 - p, 3);
-        counter.textContent = Math.round(start + (target - start) * eased);
-        if (p < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    };
-    const cio = new IntersectionObserver(
-      (e) => e[0].isIntersecting && run(),
-      { threshold: 1 }
-    );
-    cio.observe(counter);
-  }
-
-  /* ---- Showcase carousel: all 8 real screenshots, arrows + dots + keyboard + swipe + autoplay ---- */
-  const carShotImg = $("#carShotImg");
-  const carCaption = $("#carCaption");
-  const carDots = $("#carDots");
-  const carPrev = $("#carPrev");
-  const carNext = $("#carNext");
-  if (carShotImg && carDots && carPrev && carNext) {
+  /* ---- Inside Wavy: continuously-scrolling strip of the 6 real screenshots ---- */
+  const track = $("#track");
+  if (track) {
     const slides = [
       { src: "assets/showcase-home-feed.jpg", alt: "Wavy home feed showing nearby Events with a 'You're hosting' badge on a Badminton Mixer card", caption: "Your home feed: what's happening nearby, right now" },
       { src: "assets/showcase-pick-a-plan-sheet.jpg", alt: "Wavy 'Pick a Plan' sheet, badminton, bike ride, chai, sutta, drinks, games, pizza and movie activity icons", caption: "Pick a Plan: badminton, chai, drinks, or make up your own" },
@@ -100,76 +70,10 @@
       { src: "assets/showcase-event-badminton-detail.jpg", alt: "A Wavy Event: Badminton Mixer, ₹50 ticket, showing who's here and a Group Chat button", caption: "Hosted Events show who's coming before you show up" },
       { src: "assets/showcase-group-chat.jpg", alt: "A Wavy Group Chat for an Event, with members joining and chatting", caption: "Everyone in the Plan or Event, one group chat" },
     ];
-    let carIndex = 0;
-    let carTimer = null;
-
-    carDots.innerHTML = slides
-      .map((s, i) => `<button type="button" class="carousel__dot${i === 0 ? " is-active" : ""}" role="tab" aria-label="Screenshot ${i + 1} of ${slides.length}" aria-selected="${i === 0}"></button>`)
+    const all = slides.concat(slides);
+    track.innerHTML = all
+      .map((s) => `<figure class="screen"><div class="screen__shot"><img src="${s.src}" alt="${s.alt}" loading="lazy" /></div><figcaption class="screen__caption">${s.caption}</figcaption></figure>`)
       .join("");
-    const dotEls = $$(".carousel__dot", carDots);
-
-    const renderSlide = (i, instant) => {
-      const s = slides[i];
-      const apply = () => {
-        carShotImg.setAttribute("src", s.src);
-        carShotImg.setAttribute("alt", s.alt);
-        carShotImg.classList.remove("is-swapping");
-      };
-      if (reduce || instant) { apply(); }
-      else {
-        carShotImg.classList.add("is-swapping");
-        setTimeout(apply, 200);
-      }
-      if (carCaption) carCaption.textContent = s.caption;
-      dotEls.forEach((d, di) => {
-        d.classList.toggle("is-active", di === i);
-        d.setAttribute("aria-selected", String(di === i));
-      });
-    };
-
-    const goTo = (i) => {
-      carIndex = (i + slides.length) % slides.length;
-      renderSlide(carIndex);
-    };
-
-    carPrev.addEventListener("click", () => { goTo(carIndex - 1); restartCarAutoplay(); });
-    carNext.addEventListener("click", () => { goTo(carIndex + 1); restartCarAutoplay(); });
-    dotEls.forEach((d, i) => d.addEventListener("click", () => { goTo(i); restartCarAutoplay(); }));
-
-    const carousel = $(".carousel");
-    carousel.setAttribute("tabindex", "0");
-    carousel.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") { e.preventDefault(); goTo(carIndex - 1); restartCarAutoplay(); }
-      if (e.key === "ArrowRight") { e.preventDefault(); goTo(carIndex + 1); restartCarAutoplay(); }
-    });
-
-    /* touch swipe */
-    let touchX = null;
-    const stage = $(".carousel__shot");
-    stage.addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; }, { passive: true });
-    stage.addEventListener("touchend", (e) => {
-      if (touchX === null) return;
-      const dx = e.changedTouches[0].clientX - touchX;
-      if (Math.abs(dx) > 40) { dx > 0 ? goTo(carIndex - 1) : goTo(carIndex + 1); restartCarAutoplay(); }
-      touchX = null;
-    });
-
-    function restartCarAutoplay() {
-      if (reduce) return;
-      clearInterval(carTimer);
-      carTimer = setInterval(() => goTo(carIndex + 1), 4500);
-    }
-    if (!reduce && "IntersectionObserver" in window) {
-      const cio = new IntersectionObserver(
-        (e) => (e[0].isIntersecting ? restartCarAutoplay() : clearInterval(carTimer)),
-        { threshold: 0.4 }
-      );
-      cio.observe(carousel);
-    }
-    carousel.addEventListener("mouseenter", () => clearInterval(carTimer));
-    carousel.addEventListener("mouseleave", () => restartCarAutoplay());
-    carousel.addEventListener("focusin", () => clearInterval(carTimer));
-    carousel.addEventListener("focusout", () => restartCarAutoplay());
   }
 
   /* ---- Spots & Events toggle: bring the relevant screenshot to front ---- */
@@ -198,149 +102,55 @@
     selectSpot("a");
   }
 
-  /* ---- Why compare: swipe button (goes nowhere) vs Send Plan button (actually works) ---- */
-  const swipeBtn = $("#swipeBtn");
-  const facegrid = $("#facegrid");
-  const swipeNote = $("#swipeNote");
-  if (swipeBtn && facegrid && swipeNote) {
-    const swipeLines = [
-      "Hundreds of faces. Endless swiping. Zero actual plans.",
-      "Nope. Still nothing.",
-      "That's 200 swipes now. Still no plans.",
-      "Honestly, impressive commitment to going nowhere.",
+  /* ---- Plans: sidebar steps + auto-cycling phone demo ---- */
+  const stepsEl = $("#steps");
+  const planMock = $("#planMock");
+  if (stepsEl && planMock) {
+    const states = [
+      { h: "What are we doing?", chips: ["🏸 Badminton", "☕ Chai", "🎬 Movie"], mockB: "Pick something.", mockS: "Then we'll handle the rest." },
+      { h: "When?", chips: ["Now", "In an hour", "Tonight · 8 PM"], mockB: "Pick a time.", mockS: "Whenever works for you." },
+      { h: "Where?", chips: ["📍 Blue Tokai, nearby", "📍 Ice Treat Cafe", "📍 Your pick"], mockB: "Pick a spot.", mockS: "We'll drop a pin." },
+      { h: "Send it.", chips: ["☕ Chai · Tonight", "One tap. One invite."], mockB: "Send invite", mockS: "No back-and-forth." },
+      { h: "They're in.", chips: ["🙋 Count me in!", "You + 4 others"], mockB: "See you there", mockS: "That's the whole thing." },
     ];
-    let swipeCount = 0;
-    swipeBtn.addEventListener("click", () => {
-      swipeCount++;
-      if (!reduce) {
-        facegrid.classList.remove("is-shaking");
-        void facegrid.offsetWidth;
-        facegrid.classList.add("is-shaking");
-      }
-      swipeNote.textContent = swipeLines[Math.min(swipeCount, swipeLines.length - 1)];
-    });
-  }
+    const stepEls = $$(".step", stepsEl);
+    let planTimer = null;
+    let i = 0;
 
-  const sendPlanBtn = $("#sendPlanBtn");
-  const sendPlanNote = $("#sendPlanNote");
-  const sendPlanReplies = $("#plansendReplies");
-  if (sendPlanBtn && sendPlanNote) {
-    const defaultLabel = "Send Plan";
-    const defaultNote = sendPlanNote.textContent;
-    const label = $(".plansend__btn-label", sendPlanBtn);
-    let sendTimer = null;
-    sendPlanBtn.addEventListener("click", () => {
-      clearTimeout(sendTimer);
-      sendPlanBtn.classList.add("is-sent");
-      sendPlanBtn.disabled = true;
-      if (label) label.textContent = "Sent";
-      sendPlanNote.textContent = "Sent. Someone already said yes.";
-      if (sendPlanReplies) sendPlanReplies.classList.add("is-visible");
-      sendTimer = setTimeout(() => {
-        sendPlanBtn.classList.remove("is-sent");
-        sendPlanBtn.disabled = false;
-        if (label) label.textContent = defaultLabel;
-        sendPlanNote.textContent = defaultNote;
-        if (sendPlanReplies) sendPlanReplies.classList.remove("is-visible");
-      }, 2600);
-    });
-  }
-
-  /* ---- Plan builder: custom activity -> time -> spot -> send -> payoff wizard ---- */
-  const planBuilder = $("#planBuilder");
-  if (planBuilder) {
-    const panels = $$(".plan-builder__panel", planBuilder);
-    const dots = $$(".plan-builder__dot", planBuilder);
-    const summary = $("#pbSummary");
-    const spotInput = $("#pbSpotInput");
-    const sendBtn = $("#pbSendBtn");
-    const restartBtn = $("#pbRestartBtn");
-    let state = { activity: "", emoji: "", time: "", spot: "" };
-    let step = 0;
-
-    const goToStep = (i) => {
-      step = Math.max(0, Math.min(i, panels.length - 1));
-      panels.forEach((p) => p.classList.toggle("is-active", Number(p.getAttribute("data-step")) === step));
-      dots.forEach((d, di) => d.classList.toggle("is-active", di === step));
+    const render = () => {
+      stepEls.forEach((s, n) => s.classList.toggle("active", n === i));
+      const x = states[i];
+      planMock.innerHTML =
+        `<h3>${x.h}</h3><div class="phone__chips">${x.chips.map((c) => `<span class="phone__chip">${c}</span>`).join("")}</div>` +
+        `<div class="phone__mock"><b>${x.mockB}</b><small>${x.mockS}</small></div>`;
     };
 
-    const updateSummary = () => {
-      if (!summary) return;
-      const parts = [`${state.emoji} ${state.activity}`.trim(), state.time, state.spot].filter(Boolean);
-      summary.textContent = parts.length ? parts.join(" · ") : "Pick an activity, a time, and a spot.";
+    const advancePlan = () => {
+      if (reduce) return;
+      clearTimeout(planTimer);
+      planTimer = setTimeout(() => {
+        i = (i + 1) % states.length;
+        render();
+        advancePlan();
+      }, 1800);
     };
 
-    const selectChip = (group, chip, mutate) => {
-      $$(".plan-builder__chip", group).forEach((c) => c.classList.remove("is-selected"));
-      chip.classList.add("is-selected");
-      mutate();
-      updateSummary();
-      setTimeout(() => goToStep(step + 1), reduce ? 0 : 300);
-    };
+    render();
 
-    const activityGroup = $("#pbActivities");
-    if (activityGroup) {
-      $$(".plan-builder__chip", activityGroup).forEach((chip) => {
-        chip.addEventListener("click", () => selectChip(activityGroup, chip, () => {
-          state.activity = chip.getAttribute("data-value");
-          state.emoji = $(".plan-builder__emoji", chip)?.textContent || "";
-        }));
-      });
+    const planWrap = stepsEl.closest(".live__split") || stepsEl.parentElement;
+    if (planWrap) {
+      planWrap.addEventListener("mouseenter", () => clearTimeout(planTimer));
+      planWrap.addEventListener("mouseleave", advancePlan);
+      planWrap.addEventListener("focusin", () => clearTimeout(planTimer));
+      planWrap.addEventListener("focusout", advancePlan);
     }
-
-    const timeGroup = $("#pbTimes");
-    if (timeGroup) {
-      $$(".plan-builder__chip", timeGroup).forEach((chip) => {
-        chip.addEventListener("click", () => selectChip(timeGroup, chip, () => { state.time = chip.getAttribute("data-value"); }));
-      });
+    if (!reduce && "IntersectionObserver" in window) {
+      const plio = new IntersectionObserver(
+        (entries) => (entries[0].isIntersecting ? advancePlan() : clearTimeout(planTimer)),
+        { threshold: 0.4 }
+      );
+      plio.observe(planWrap || stepsEl);
     }
-
-    const spotGroup = $("#pbSpots");
-    if (spotGroup) {
-      $$(".plan-builder__chip", spotGroup).forEach((chip) => {
-        chip.addEventListener("click", () => selectChip(spotGroup, chip, () => {
-          state.spot = chip.getAttribute("data-value");
-          if (spotInput) spotInput.value = "";
-        }));
-      });
-    }
-    if (spotInput) {
-      spotInput.addEventListener("keydown", (e) => {
-        if (e.key !== "Enter" || !spotInput.value.trim()) return;
-        e.preventDefault();
-        if (spotGroup) $$(".plan-builder__chip", spotGroup).forEach((c) => c.classList.remove("is-selected"));
-        state.spot = spotInput.value.trim();
-        updateSummary();
-        setTimeout(() => goToStep(step + 1), reduce ? 0 : 200);
-      });
-    }
-
-    $$("[data-back]", planBuilder).forEach((b) => b.addEventListener("click", () => goToStep(step - 1)));
-
-    if (sendBtn) {
-      sendBtn.addEventListener("click", () => {
-        sendBtn.disabled = true;
-        const label = sendBtn.textContent;
-        sendBtn.textContent = "Sending…";
-        setTimeout(() => {
-          goToStep(4);
-          sendBtn.disabled = false;
-          sendBtn.textContent = label;
-        }, reduce ? 50 : 700);
-      });
-    }
-
-    if (restartBtn) {
-      restartBtn.addEventListener("click", () => {
-        state = { activity: "", emoji: "", time: "", spot: "" };
-        $$(".plan-builder__chip", planBuilder).forEach((c) => c.classList.remove("is-selected"));
-        if (spotInput) spotInput.value = "";
-        updateSummary();
-        goToStep(0);
-      });
-    }
-
-    updateSummary();
   }
 
   /* ---- Live Match demo: click "Tap in" → searching → matched → chat ---- */
@@ -495,7 +305,7 @@
 
   /* ---- 3D tilt cards ---- */
   if (!reduce && finePointer) {
-    $$(".shot, .step, .tip").forEach((card) => {
+    $$(".shot, .card, .tip").forEach((card) => {
       card.addEventListener("mouseenter", () => { card.style.transition = "transform .12s ease-out, box-shadow .3s"; });
       card.addEventListener("mousemove", (e) => {
         const r = card.getBoundingClientRect();
@@ -513,7 +323,7 @@
   /* ---- hero mouse parallax (uses CSS translate so it composes with float animations) ---- */
   const heroEl = $(".hero");
   if (heroEl && !reduce && finePointer) {
-    const layers = [[$(".orb--rose"), 34], [$(".orb--blue"), 22], [$(".hero__shot"), -10]].filter((l) => l[0]);
+    const layers = [[$(".orb--rose"), 34], [$(".orb--blue"), 22], [$(".hero__scene"), -10]].filter((l) => l[0]);
     heroEl.addEventListener("mousemove", (e) => {
       const r = heroEl.getBoundingClientRect();
       const cx = (e.clientX - r.left) / r.width - 0.5;
