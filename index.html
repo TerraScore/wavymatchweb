@@ -136,10 +136,7 @@
 
   <!-- ============ HERO ============ -->
   <section class="hero">
-    <div class="hero__bg" aria-hidden="true">
-      <span class="orb orb--rose"></span>
-      <span class="orb orb--blue"></span>
-    </div>
+    <img class="hero__photo" src="assets/hero-group.jpg" alt="A group of friends gathered around a table, talking and laughing together" />
 
     <div class="hero__grid">
       <div class="hero__copy">
@@ -169,18 +166,6 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/></svg>
             <span><small>Get it on</small>Google Play</span>
           </a>
-        </div>
-      </div>
-
-      <div class="hero__art reveal" data-d="2">
-        <div class="hero__scene" aria-hidden="true">
-          <span class="hero__figure hero__figure--1"></span>
-          <span class="hero__figure hero__figure--2"></span>
-          <span class="hero__figure hero__figure--3"></span>
-          <span class="hero__figure hero__figure--4"></span>
-          <span class="hero__bubble hero__bubble--1">☕ Coffee later?</span>
-          <span class="hero__bubble hero__bubble--2">📍 3 people nearby</span>
-          <span class="hero__bubble hero__bubble--3">✨ You're both free</span>
         </div>
       </div>
     </div>
@@ -283,21 +268,26 @@
       </div>
 
       <div class="live-demo reveal" data-d="3">
-        <div class="live-demo__card" id="liveDemoCard" data-state="idle">
+        <div class="live-demo__card" id="liveDemoCard" data-state="tap">
           <div class="live-demo__radar">
             <span class="live-demo__ring"></span>
             <span class="live-demo__ring"></span>
-            <span class="live-demo__core" id="liveDemoCore">
+            <span class="live-demo__core">
               <svg class="live-demo__icon live-demo__icon--pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.4"/></svg>
               <svg class="live-demo__icon live-demo__icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
             </span>
           </div>
           <p class="live-demo__status" id="liveDemoStatus" aria-live="polite">Tap in when you're free</p>
-          <div class="live-demo__chat" id="liveDemoChat">
+          <div class="live-demo__confirm" aria-hidden="true">
+            <span class="live-demo__avatar">🙋‍♀️</span>
+            <span class="live-demo__avatar">🤓</span>
+          </div>
+          <div class="live-demo__chat" aria-hidden="true">
             <span class="live-demo__bubble live-demo__bubble--in">Free for chai? ☕</span>
             <span class="live-demo__bubble live-demo__bubble--out">Omw!</span>
+            <span class="live-demo__bubble live-demo__bubble--tag">📍 Ice Treat Cafe · 6 PM</span>
           </div>
-          <button type="button" class="btn btn--primary live-demo__btn" id="liveDemoBtn">Tap in</button>
+          <div class="live-demo__tapbtn" aria-hidden="true">Tap in</div>
         </div>
       </div>
 

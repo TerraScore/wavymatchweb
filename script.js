@@ -132,7 +132,7 @@
         i = (i + 1) % states.length;
         render();
         advancePlan();
-      }, 1800);
+      }, 1000);
     };
 
     render();
@@ -153,33 +153,51 @@
     }
   }
 
-  /* ---- Live Match demo: click "Tap in" → searching → matched → chat ---- */
+  /* ---- Live Match demo: auto-playing "screen recording" of all 5 steps ---- */
   const liveDemoCard = $("#liveDemoCard");
-  const liveDemoBtn = $("#liveDemoBtn");
   const liveDemoStatus = $("#liveDemoStatus");
-  if (liveDemoCard && liveDemoBtn && liveDemoStatus) {
-    let demoTimers = [];
-    const clearDemo = () => { demoTimers.forEach(clearTimeout); demoTimers = []; };
-    const wait = (fn, ms) => demoTimers.push(setTimeout(fn, ms));
+  if (liveDemoCard && liveDemoStatus) {
+    const demoStates = [
+      { state: "tap", status: "Tap in when you're free", delay: 1300 },
+      { state: "searching", status: "Finding someone nearby…", delay: 1700 },
+      { state: "confirm", status: "You both said yes", delay: 1500 },
+      { state: "chat", status: "Chat's open — say hi 👋", delay: 1700 },
+      { state: "meet", status: "See you there ☕", delay: 1800 },
+    ];
+    let demoIndex = 0;
+    let demoTimer = null;
 
-    const setState = (state, status) => {
-      liveDemoCard.setAttribute("data-state", state);
-      liveDemoStatus.textContent = status;
+    const renderDemo = () => {
+      const s = demoStates[demoIndex];
+      liveDemoCard.setAttribute("data-state", s.state);
+      liveDemoStatus.textContent = s.status;
     };
 
-    const runDemo = () => {
-      clearDemo();
-      liveDemoBtn.disabled = true;
-      liveDemoBtn.textContent = "Finding someone…";
-      setState("searching", "Finding someone nearby…");
-      wait(() => {
-        setState("matched", "Matched! Say hi 👋");
-        liveDemoBtn.disabled = false;
-        liveDemoBtn.textContent = "Tap in again";
-      }, reduce ? 50 : 1500);
+    const advanceDemo = () => {
+      if (reduce) return;
+      clearTimeout(demoTimer);
+      demoTimer = setTimeout(() => {
+        demoIndex = (demoIndex + 1) % demoStates.length;
+        renderDemo();
+        advanceDemo();
+      }, demoStates[demoIndex].delay);
     };
 
-    liveDemoBtn.addEventListener("click", runDemo);
+    renderDemo();
+
+    const demoWrap = liveDemoCard.closest(".live-demo") || liveDemoCard;
+    demoWrap.addEventListener("mouseenter", () => clearTimeout(demoTimer));
+    demoWrap.addEventListener("mouseleave", advanceDemo);
+    demoWrap.addEventListener("focusin", () => clearTimeout(demoTimer));
+    demoWrap.addEventListener("focusout", advanceDemo);
+
+    if (!reduce && "IntersectionObserver" in window) {
+      const ldio = new IntersectionObserver(
+        (entries) => (entries[0].isIntersecting ? advanceDemo() : clearTimeout(demoTimer)),
+        { threshold: 0.4 }
+      );
+      ldio.observe(demoWrap);
+    }
   }
 
   /* ---- form submissions → Web3Forms (emails each submission to you) ---- */
@@ -320,18 +338,6 @@
     });
   }
 
-  /* ---- hero mouse parallax (uses CSS translate so it composes with float animations) ---- */
-  const heroEl = $(".hero");
-  if (heroEl && !reduce && finePointer) {
-    const layers = [[$(".orb--rose"), 34], [$(".orb--blue"), 22], [$(".hero__scene"), -10]].filter((l) => l[0]);
-    heroEl.addEventListener("mousemove", (e) => {
-      const r = heroEl.getBoundingClientRect();
-      const cx = (e.clientX - r.left) / r.width - 0.5;
-      const cy = (e.clientY - r.top) / r.height - 0.5;
-      layers.forEach(([el, d]) => { el.style.translate = cx * d + "px " + cy * d + "px"; });
-    });
-    heroEl.addEventListener("mouseleave", () => layers.forEach(([el]) => { el.style.translate = ""; }));
-  }
 
   /* ---- smooth anchor scroll with nav offset (fallback for older browsers) ---- */
   $$('a[href^="#"]').forEach((a) => {
