@@ -137,6 +137,14 @@
 
     render();
 
+    stepEls.forEach((s, n) => {
+      s.addEventListener("click", () => {
+        i = n;
+        render();
+        advancePlan();
+      });
+    });
+
     const planWrap = stepsEl.closest(".live__split") || stepsEl.parentElement;
     if (planWrap) {
       planWrap.addEventListener("mouseenter", () => clearTimeout(planTimer));

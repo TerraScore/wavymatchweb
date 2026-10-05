@@ -215,7 +215,13 @@ strong { font-weight: 600; }
 
 /* Plans: sidebar steps */
 .steps { display: flex; flex-direction: column; gap: .7rem; }
-.step { padding: 1.1rem 1.3rem; border: 1px solid rgba(255,255,255,.1); border-radius: var(--r); background: rgba(255,255,255,.04); transition: background .35s var(--ease), transform .35s var(--ease), color .35s var(--ease); }
+.step {
+  display: block; width: 100%; text-align: left; font: inherit; cursor: pointer;
+  padding: 1.1rem 1.3rem; border: 1px solid rgba(255,255,255,.1); border-radius: var(--r); background: rgba(255,255,255,.04); color: #fff;
+  transition: background .35s var(--ease), transform .2s var(--ease), color .35s var(--ease), border-color .2s var(--ease);
+}
+.step:hover:not(.active) { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.22); transform: translateX(3px); }
+.step:focus-visible { outline: 2px solid var(--rose-bright); outline-offset: 2px; }
 .step small { display: block; font-family: "Outfit"; font-weight: 800; font-size: .68rem; letter-spacing: .08em; color: rgba(255,255,255,.4); margin-bottom: .3rem; }
 .step.active { background: #fff; color: var(--ink); transform: translateX(8px); }
 .step.active small { color: var(--rose); }
